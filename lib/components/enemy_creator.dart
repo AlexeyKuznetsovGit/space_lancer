@@ -9,11 +9,13 @@ import 'package:space_lancer/space_lancer_game.dart';
 class EnemyCreator extends Component with HasGameRef<SpaceLancerGame> {
   final Random random = Random();
   final _halfWidth = EnemyComponent.initialSize.x / 2;
+   double timer;
+  final double timeLimit;
   late Timer _timer;
   late Timer _freezeTimer;
 
 /*period: 2, repeat: true*/
-  EnemyCreator() : super() {
+  EnemyCreator({required this.timer, required this.timeLimit}) : super() {
     _timer = Timer(2, onTick: _spawnEnemy, repeat: true);
 
     // Sets freeze time to 2 seconds. After 2 seconds spawn timer will start again.
@@ -97,6 +99,9 @@ class EnemyCreator extends Component with HasGameRef<SpaceLancerGame> {
   @override
   void update(double dt) {
     super.update(dt);
+    if (timer > timeLimit) {
+      removeFromParent();
+    }
     // Update timers with delta time to make them tick.
     _timer.update(dt);
     _freezeTimer.update(dt);

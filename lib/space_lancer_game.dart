@@ -14,6 +14,7 @@ import 'package:space_lancer/components/health_bar.dart';
 import 'package:space_lancer/components/player_component.dart';
 import 'package:space_lancer/components/power_up_manager.dart';
 import 'package:space_lancer/components/power_ups.dart';
+import 'package:space_lancer/components/progress_indicator.dart';
 import 'package:space_lancer/components/star_background_creator.dart';
 import 'package:space_lancer/screens/widgets/game_over.dart';
 import 'package:space_lancer/screens/widgets/pause_button.dart';
@@ -26,12 +27,15 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
   late EnemyCreator _enemyCreator;
   late PowerUpManager _powerUpManager;
   late AudioPlayerComponent _audioPlayerComponent;
+   double timer = 0;
+   double timeLimit = 120;
 
   /*late PowerUpManager _powerUpManager;*/
   Offset? pointerStarPosition;
   Offset? pointerCurrentPosition;
   final double joystickRadius = 60;
-  final double deadZoneRadius = 20;
+  final double deadZoneRadius = 15;
+  late TimerProgressBar _progressBar;
 
   /*Vector2 fixedResolution = Vector2(540, 960);*/
   final _commandList = List<Command>.empty(growable: true);
@@ -62,7 +66,7 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
 
     add(_audioPlayerComponent = AudioPlayerComponent());
 
-    add(_enemyCreator = EnemyCreator());
+    add(_enemyCreator = EnemyCreator(timer: timer,timeLimit: timeLimit));
     add(_powerUpManager = PowerUpManager());
     add(StarBackGroundCreator());
     add(player = PlayerComponent());
@@ -84,6 +88,8 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
 
     add(_playerHealth);
 
+    add(_progressBar = TimerProgressBar(size, timer, timeLimit));
+
     add(
       HealthBar(
         player: player,
@@ -97,6 +103,9 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
   @override
   void update(double dt) {
     super.update(dt);
+    timer += dt;
+    _progressBar.timer = timer;
+    _enemyCreator.timer = timer;
 
     // Run each command from _commandList on each
     // component from components list. The run()
