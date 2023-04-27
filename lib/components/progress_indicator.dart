@@ -1,5 +1,6 @@
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
+import 'package:space_lancer/components/boss_component.dart';
 import 'package:space_lancer/space_lancer_game.dart';
 
 class TimerProgressBar extends Component {

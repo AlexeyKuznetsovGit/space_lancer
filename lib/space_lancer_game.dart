@@ -6,6 +6,7 @@ import 'package:flame/experimental.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:space_lancer/components/audio_player_component.dart';
+import 'package:space_lancer/components/boss_component.dart';
 import 'package:space_lancer/components/bullet_component.dart';
 import 'package:space_lancer/components/command.dart';
 import 'package:space_lancer/components/enemy_component.dart';
@@ -28,7 +29,7 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
   late PowerUpManager _powerUpManager;
   late AudioPlayerComponent _audioPlayerComponent;
    double timer = 0;
-   double timeLimit = 120;
+   double timeLimit = 1;
 
   /*late PowerUpManager _powerUpManager;*/
   Offset? pointerStarPosition;
@@ -42,6 +43,7 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
   final _addLaterCommandList = List<Command>.empty(growable: true);
 
   int score = 0;
+  bool bossSpawn = false;
 
   @override
   Future<void> onLoad() async {
@@ -54,6 +56,7 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
       'freeze.png',
       'icon_plusSmall.png',
       'multi_fire.png',
+      'boss_ship.png'
     ]);
 
     add(
@@ -106,6 +109,11 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
     timer += dt;
     _progressBar.timer = timer;
     _enemyCreator.timer = timer;
+    if(timer> timeLimit && !bossSpawn){
+      add(BossComponent());
+      bossSpawn = !bossSpawn;
+    }
+
 
     // Run each command from _commandList on each
     // component from components list. The run()
@@ -220,7 +228,7 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
     });
   }
 
-  void increaseScore() {
-    score++;
+  void increaseScore([int? point]) {
+   point == null ? score++ : score += point;
   }
 }

@@ -1,25 +1,29 @@
+import 'dart:math';
+
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:space_lancer/components/boss_component.dart';
 import 'package:space_lancer/components/enemy_component.dart';
 import 'package:space_lancer/components/explosion_component.dart';
 import 'package:space_lancer/components/getCurrentLevel.dart';
+import 'package:space_lancer/components/player_component.dart';
 import 'package:space_lancer/space_lancer_game.dart';
 
-class BulletComponent extends SpriteAnimationComponent
-    with HasGameRef<SpaceLancerGame>, CollisionCallbacks {
-  static const  speed = 350.0;
-  late final Vector2 velocity;
-  final Vector2 deltaPosition = Vector2.zero();
+class BossBullet extends SpriteAnimationComponent with HasGameRef<SpaceLancerGame>, CollisionCallbacks {
+  static const speed = 350.0;
 
-  BulletComponent({required super.position, super.angle})
-      : super(size: Vector2(16, 32));
+  late final Vector2 velocity;
+  Vector2 direction = Vector2(0, 1);
+
+  BossBullet({required super.position, super.angle}) : super(size: Vector2(16, 32)){
+    /*angle = pi;*/
+  }
 
   @override
   Future<void> onLoad() async {
     add(CircleHitbox());
     animation = await gameRef.loadSpriteAnimation(
-      'bullet.png',
+      'bullet_rev.png',
       SpriteAnimationData.sequenced(
         stepTime: 0.2,
         amount: 4,
@@ -34,12 +38,7 @@ class BulletComponent extends SpriteAnimationComponent
   @override
   void onCollisionStart(Set<Vector2> points, PositionComponent other) {
     super.onCollisionStart(points, other);
-    if (other is EnemyComponent) {
-    /*  other.takeHit();*/
-      gameRef.add(ExplosionComponent(position: position.clone()));
-      removeFromParent();
-    }
-    if (other is BossComponent) {
+    if (other is PlayerComponent) {
       /*  other.takeHit();*/
       gameRef.add(ExplosionComponent(position: position.clone()));
       removeFromParent();
@@ -50,14 +49,13 @@ class BulletComponent extends SpriteAnimationComponent
   void update(double dt) {
     super.update(dt);
 
-    deltaPosition
+    direction
       ..setFrom(velocity)
       ..scale(dt);
-    position += deltaPosition;
+    position -= direction;
 
-    if (position.y < 0 ||
-        position.x > gameRef.size.x ||
-        position.x + size.x < 0) {
+    if (position.y >= gameRef.size.y || position.x > gameRef.size.x || position.x + size.x < 0) {
+      print('da');
       removeFromParent();
     }
   }

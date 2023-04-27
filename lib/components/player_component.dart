@@ -1,6 +1,8 @@
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:space_lancer/components/audio_player_component.dart';
+import 'package:space_lancer/components/boss_bullet.dart';
+import 'package:space_lancer/components/boss_component.dart';
 
 import 'package:space_lancer/components/bullet_component.dart';
 import 'package:space_lancer/components/command.dart';
@@ -38,7 +40,7 @@ class PlayerComponent extends SpriteAnimationComponent with HasGameRef<SpaceLanc
       ),
     );*/
     animation = SpriteAnimation.fromFrameData(
-      game.images.fromCache('player.png'),
+      gameRef.images.fromCache('player.png'),
       SpriteAnimationData.sequenced(
         amount: 4,
         textureSize: Vector2(32, 48),
@@ -64,7 +66,7 @@ class PlayerComponent extends SpriteAnimationComponent with HasGameRef<SpaceLanc
   void _createBullet() {
     BulletComponent bullet = BulletComponent(position: position + Vector2(-8, -size.y / 2), angle: _bulletAngles);
     gameRef.add(bullet);
-    game.addCommand(Command<AudioPlayerComponent>(action: (audioPlayer) {
+    gameRef.addCommand(Command<AudioPlayerComponent>(action: (audioPlayer) {
       audioPlayer.playSfx('laserSmall_001.ogg');
     }));
     if (_shootMultipleBullets) {
@@ -76,23 +78,10 @@ class PlayerComponent extends SpriteAnimationComponent with HasGameRef<SpaceLanc
           ),
         ),
       );
-      /*_superBulletAngles.map((angle) {
-        BulletComponent bullet = BulletComponent(
-          position: position + Vector2(-5, -size.y / 2),
-          angle: angle,
-        );
-        gameRef.add(bullet);
-      });*/
+
     }
 
-    /*gameRef.addAll(
-      _superBulletAngles.map(
-        (angle) => BulletComponent(
-          position: position + Vector2(-5, -size.y / 2),
-          angle: angle,
-        ),
-      ),
-    );*/
+
   }
 
   void increaseHealthBy(int points) {
@@ -181,6 +170,23 @@ class PlayerComponent extends SpriteAnimationComponent with HasGameRef<SpaceLanc
       //     PerlinNoiseEffectController(duration: 1),
       //   ),
       // );
+      gameRef.camera.shake(intensity: 20);
+      _health -= 10;
+      if (_health <= 0) {
+        _health = 0;
+      }
+    }
+    if(other is BossComponent){
+      gameRef.add(ExplosionComponent(position: position));
+      position.y += 50;
+      gameRef.camera.shake(intensity: 20);
+      _health -= 10;
+      if (_health <= 0) {
+        _health = 0;
+      }
+
+    }
+    if(other is BossBullet){
       gameRef.camera.shake(intensity: 20);
       _health -= 10;
       if (_health <= 0) {

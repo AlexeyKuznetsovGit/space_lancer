@@ -1,6 +1,7 @@
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/experimental.dart';
+import 'package:space_lancer/components/boss_component.dart';
 import 'package:space_lancer/components/enemy_component.dart';
 import 'package:space_lancer/components/enemy_creator.dart';
 import 'package:space_lancer/components/player_component.dart';
@@ -128,6 +129,11 @@ class Freeze extends PowerUp {
       powerUpManager.freeze();
     });
     gameRef.addCommand(command3);
+
+    final command4 = Command<BossComponent>(action: (boss) {
+      boss.freeze();
+    });
+    gameRef.addCommand(command4);
   }
 }
 
