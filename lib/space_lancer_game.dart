@@ -6,6 +6,7 @@ import 'package:flame/experimental.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:space_lancer/components/audio_player_component.dart';
+import 'package:space_lancer/components/boss_bullet.dart';
 import 'package:space_lancer/components/boss_component.dart';
 import 'package:space_lancer/components/bullet_component.dart';
 import 'package:space_lancer/components/command.dart';
@@ -18,6 +19,7 @@ import 'package:space_lancer/components/power_ups.dart';
 import 'package:space_lancer/components/progress_indicator.dart';
 import 'package:space_lancer/components/star_background_creator.dart';
 import 'package:space_lancer/screens/widgets/game_over.dart';
+import 'package:space_lancer/screens/widgets/game_win.dart';
 import 'package:space_lancer/screens/widgets/pause_button.dart';
 
 class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection {
@@ -28,8 +30,10 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
   late EnemyCreator _enemyCreator;
   late PowerUpManager _powerUpManager;
   late AudioPlayerComponent _audioPlayerComponent;
-   double timer = 0;
-   double timeLimit = 1;
+  late BossComponent _boss;
+   Timer timerWinGame = Timer(2);
+  double timer = 0;
+  double timeLimit = 1;
 
   /*late PowerUpManager _powerUpManager;*/
   Offset? pointerStarPosition;
@@ -45,8 +49,11 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
   int score = 0;
   bool bossSpawn = false;
 
+
   @override
   Future<void> onLoad() async {
+
+    _boss = BossComponent();
     await images.loadAll([
       'bullet.png',
       'enemy.png',
@@ -69,7 +76,7 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
 
     add(_audioPlayerComponent = AudioPlayerComponent());
 
-    add(_enemyCreator = EnemyCreator(timer: timer,timeLimit: timeLimit));
+    add(_enemyCreator = EnemyCreator(timer: timer, timeLimit: timeLimit));
     add(_powerUpManager = PowerUpManager());
     add(StarBackGroundCreator());
     add(player = PlayerComponent());
@@ -109,11 +116,10 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
     timer += dt;
     _progressBar.timer = timer;
     _enemyCreator.timer = timer;
-    if(timer> timeLimit && !bossSpawn){
-      add(BossComponent());
+    if (timer > timeLimit && !bossSpawn) {
+      add(_boss);
       bossSpawn = !bossSpawn;
     }
-
 
     // Run each command from _commandList on each
     // component from components list. The run()
@@ -140,6 +146,18 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
         overlays.add(GameOverMenu.id);
       }
     }
+    if (_boss.isMounted) {
+      if (_boss.hitPoints <= 0 && (!camera.shaking)) {
+        player.stopFire();
+        timerWinGame = Timer(2, onTick: (){
+          pauseEngine();
+          overlays.remove(PauseButton.id);
+          overlays.add(GameWin.id);
+        });
+      }
+    }
+    timerWinGame.update(dt);
+
   }
 
   @override
@@ -215,6 +233,10 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
     _enemyCreator.reset();
     score = 0;
     _powerUpManager.reset();
+    timer = 0;
+    bossSpawn = false;
+    _boss.reset();
+    add(_progressBar = TimerProgressBar(size, timer, timeLimit));
     children.whereType<EnemyComponent>().forEach((enemy) {
       enemy.removeFromParent();
     });
@@ -226,9 +248,18 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
     children.whereType<PowerUp>().forEach((powerUp) {
       powerUp.removeFromParent();
     });
+    children.whereType<TimerProgressBar>().forEach((progress) {
+      progress.removeFromParent();
+    });
+    children.whereType<BossComponent>().forEach((boss) {
+      boss.removeFromParent();
+    });
+    children.whereType<BossBullet>().forEach((bossBullet) {
+      bossBullet.removeFromParent();
+    });
   }
 
   void increaseScore([int? point]) {
-   point == null ? score++ : score += point;
+    point == null ? score++ : score += point;
   }
 }

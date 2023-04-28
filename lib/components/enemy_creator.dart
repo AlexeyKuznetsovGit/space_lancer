@@ -19,7 +19,7 @@ class EnemyCreator extends Component with HasGameRef<SpaceLancerGame> {
     _timer = Timer(2, onTick: _spawnEnemy, repeat: true);
 
     // Sets freeze time to 2 seconds. After 2 seconds spawn timer will start again.
-    _freezeTimer = Timer(2, onTick: () {
+    _freezeTimer = Timer(4, onTick: () {
       _timer.start();
     });
   }

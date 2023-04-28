@@ -52,7 +52,7 @@ class EnemyComponent extends SpriteAnimationComponent with HasGameRef<SpaceLance
     _hitPoints = enemyData.level * 10;
     _hpText.text = '$_hitPoints HP';
 
-    _freezeTimer = Timer(2, onTick: () {
+    _freezeTimer = Timer(4, onTick: () {
       _speed = enemyData.speed;
     });
     if (enemyData.hMove) {

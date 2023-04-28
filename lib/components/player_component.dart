@@ -9,18 +9,21 @@ import 'package:space_lancer/components/command.dart';
 import 'package:space_lancer/components/enemy_component.dart';
 import 'package:space_lancer/components/explosion_component.dart';
 import 'package:space_lancer/components/getCurrentLevel.dart';
+import 'package:space_lancer/models/player_data.dart';
 import 'package:space_lancer/space_lancer_game.dart';
 
 class PlayerComponent extends SpriteAnimationComponent with HasGameRef<SpaceLancerGame>, CollisionCallbacks {
   Vector2 moveDirection = Vector2.zero();
-  late TimerComponent bulletCreator;
   static double speed = 250;
+ static double timeShot = 2;
   int _health = 100;
 
   int get health => _health;
   bool _shootMultipleBullets = false;
   late Timer _powerUpTimer;
   late Timer _bulletTimer;
+  late PlayerData _playerData;
+  int get score => _playerData.currentScore;
 
   PlayerComponent() : super() {
     _powerUpTimer = Timer(6, onTick: () {
@@ -105,7 +108,7 @@ class PlayerComponent extends SpriteAnimationComponent with HasGameRef<SpaceLanc
     );
 
     int currentLevel = GameUtils.getCurrentLevel(gameRef.score);
-    double timeShot = 2;
+
     switch (currentLevel) {
       case 1:
         {
@@ -138,14 +141,17 @@ class PlayerComponent extends SpriteAnimationComponent with HasGameRef<SpaceLanc
   void reset() {
     position = gameRef.size / 2;
     _health = 100;
+    speed = 250;
+    timeShot = 2;
+    beginFire();
   }
 
-  /*void beginFire() {
-    bulletCreator.timer.start();
-  }*/
+  void beginFire() {
+    _bulletTimer.start();
+  }
 
   void stopFire() {
-    bulletCreator.timer.pause();
+    _bulletTimer.pause();
   }
 
   void takeHit() {

@@ -55,7 +55,6 @@ class BossBullet extends SpriteAnimationComponent with HasGameRef<SpaceLancerGam
     position -= direction;
 
     if (position.y >= gameRef.size.y || position.x > gameRef.size.x || position.x + size.x < 0) {
-      print('da');
       removeFromParent();
     }
   }

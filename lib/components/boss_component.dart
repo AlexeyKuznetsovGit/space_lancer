@@ -15,15 +15,17 @@ import 'package:space_lancer/models/enemy_model.dart';
 import 'package:space_lancer/space_lancer_game.dart';
 
 class BossComponent extends SpriteComponent with HasGameRef<SpaceLancerGame>, CollisionCallbacks {
-  double _speed = 250;
+  double speed = 150;
+  double _currentSpeed = 150;
   double _xDirection = 1.0;
   double _yDirection = 1.0;
   double _yPosition = 0;
+  double timeBullet = 2;
   late Timer _bulletTimer;
   late Timer _freezeTimer;
   late Timer _changeDirectionTimer;
 
-  int _hitPoints = 1000;
+  int hitPoints = 1000;
 
   final _hpText = TextComponent(
     text: '1000 HP',
@@ -37,12 +39,12 @@ class BossComponent extends SpriteComponent with HasGameRef<SpaceLancerGame>, Co
   );
 
   BossComponent() : super() {
-    _hpText.text = '$_hitPoints HP';
-    _freezeTimer = Timer(2, onTick: () {
-      _speed = 250;
+    _hpText.text = '$hitPoints HP';
+    _freezeTimer = Timer(4, onTick: () {
+      speed = _currentSpeed;
     });
 
-    _bulletTimer = Timer(1, onTick: _createBullet, repeat: true);
+    _bulletTimer = Timer(timeBullet, onTick: _createBullet, repeat: true);
 
     anchor = Anchor.topCenter;
 
@@ -91,11 +93,15 @@ class BossComponent extends SpriteComponent with HasGameRef<SpaceLancerGame>, Co
     super.update(dt);
 
     // Sync-up text component and value of hitPoints.
-    _hpText.text = '$_hitPoints HP';
-
+    _hpText.text = '$hitPoints HP';
+    if(hitPoints <= 10){
+      _currentSpeed = 250;
+      speed = _currentSpeed;
+      timeBullet = 1;
+    }
     // If hitPoints have reduced to zero,
     // destroy this enemy.
-    if (_hitPoints <= 0) {
+    if (hitPoints <= 0) {
       destroy();
       gameRef.increaseScore(100);
     }
@@ -103,7 +109,7 @@ class BossComponent extends SpriteComponent with HasGameRef<SpaceLancerGame>, Co
 
     _freezeTimer.update(dt);
      _changeDirectionTimer.update(dt);
-    position.x += _speed * _xDirection * dt;
+    position.x += speed * _xDirection * dt;
 
     if (position.x <= 0) {
       _xDirection = 1;
@@ -111,7 +117,7 @@ class BossComponent extends SpriteComponent with HasGameRef<SpaceLancerGame>, Co
       _xDirection = -1;
     }
 
-    position.y += _speed * _yDirection * dt;
+    position.y += speed * _yDirection * dt;
 
     if (position.y + size.y / 2 >= gameRef.size.y / 2) {
       _yDirection = -1;
@@ -120,6 +126,13 @@ class BossComponent extends SpriteComponent with HasGameRef<SpaceLancerGame>, Co
     if (position.y <= _yPosition) {
       _yDirection = 1;
     }
+  }
+
+  void reset(){
+   hitPoints = 1000;
+   speed = 150;
+   timeBullet = 2;
+   _currentSpeed = 150;
   }
 
   void destroy() {
@@ -136,12 +149,12 @@ class BossComponent extends SpriteComponent with HasGameRef<SpaceLancerGame>, Co
     super.onCollision(intersectionPoints, other);
 
     if (other is BulletComponent) {
-      _hitPoints -= 10;
+      hitPoints -= 10;
     }
   }
 
   void freeze() {
-    _speed = 50;
+    speed = 50;
     _freezeTimer.stop();
     _freezeTimer.start();
   }
