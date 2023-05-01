@@ -35,13 +35,6 @@ class PlayerComponent extends SpriteAnimationComponent with HasGameRef<SpaceLanc
   @override
   Future<void> onLoad() async {
     add(CircleHitbox());
-    /*add(
-      bulletCreator = TimerComponent(
-        period: 2,
-        repeat: true,
-        onTick: _createBullet,
-      ),
-    );*/
     animation = SpriteAnimation.fromFrameData(
       gameRef.images.fromCache('player.png'),
       SpriteAnimationData.sequenced(
@@ -49,14 +42,7 @@ class PlayerComponent extends SpriteAnimationComponent with HasGameRef<SpaceLanc
         textureSize: Vector2(32, 48),
         stepTime: 0.2,
       ),
-    ); /*await gameRef.loadSpriteAnimation(
-      'player.png',
-      SpriteAnimationData.sequenced(
-        stepTime: 0.2,
-        amount: 4,
-        textureSize: Vector2(32, 48),
-      ),
-    );*/
+    );
     position = gameRef.size / 2;
     width = 64;
     height = 96;
@@ -100,7 +86,7 @@ class PlayerComponent extends SpriteAnimationComponent with HasGameRef<SpaceLanc
     super.update(dt);
     _powerUpTimer.update(dt);
     _bulletTimer.update(dt);
-    this.position += moveDirection.normalized() * speed * dt;
+    position += moveDirection.normalized() * speed * dt;
 
     position.clamp(
       Vector2.zero() + size / 2,
@@ -166,16 +152,7 @@ class PlayerComponent extends SpriteAnimationComponent with HasGameRef<SpaceLanc
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollision(intersectionPoints, other);
 
-    // If other entity is an Enemy, reduce player's health by 10.
     if (other is EnemyComponent) {
-      // Make the camera shake, with custom intensity.
-      // TODO: Investigate how camera shake should be implemented in new camera system.
-      // game.primaryCamera.viewfinder.add(
-      //   MoveByEffect(
-      //     Vector2.all(10),
-      //     PerlinNoiseEffectController(duration: 1),
-      //   ),
-      // );
       gameRef.camera.shake(intensity: 20);
       _health -= 10;
       if (_health <= 0) {
@@ -200,20 +177,6 @@ class PlayerComponent extends SpriteAnimationComponent with HasGameRef<SpaceLanc
       }
     }
   }
-
-/*  @override
-  void onCollisionStart(Set<Vector2> points, PositionComponent other) {
-    super.onCollisionStart(points, other);
-    if (other is EnemyComponent) {
-      other.takeHit();
-      gameRef.camera.shake(intensity: 20);
-
-      _health -= 10;
-      if (_health <= 0) {
-        _health = 0;
-      }
-    }
-  }*/
 
   void shootMultipleBullets() {
     _shootMultipleBullets = true;

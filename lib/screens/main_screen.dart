@@ -13,7 +13,7 @@ class MainScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Game title.
+
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 50.0),
               child: Text(

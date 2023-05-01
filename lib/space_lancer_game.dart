@@ -33,7 +33,7 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
   late BossComponent _boss;
    Timer timerWinGame = Timer(2);
   double timer = 0;
-  double timeLimit = 1;
+  double timeLimit = 120;
 
   /*late PowerUpManager _powerUpManager;*/
   Offset? pointerStarPosition;
@@ -121,18 +121,12 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
       bossSpawn = !bossSpawn;
     }
 
-    // Run each command from _commandList on each
-    // component from components list. The run()
-    // method of Command is no-op if the command is
-    // not valid for given component.
     for (var command in _commandList) {
       for (var component in children) {
         command.run(component);
       }
     }
 
-    // Remove all the commands that are processed and
-    // add all new commands to be processed in next update.
     _commandList.clear();
     _commandList.addAll(_addLaterCommandList);
     _addLaterCommandList.clear();
