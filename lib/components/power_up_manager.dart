@@ -61,32 +61,19 @@ class PowerUpManager extends Component with HasGameRef<SpaceLancerGame> {
   // This method is responsible for generating a
   // random power up at random location on the screen.
   void _spawnPowerUp() {
-    Vector2 initialSize = Vector2(64, 64);
+    Vector2 initialSize = Vector2(32, 32);
     Vector2 position = Vector2(
       random.nextDouble() * gameRef.size.x,
       random.nextDouble() * gameRef.size.y,
     );
-
-    // Clamp so that the power up does not
-    // go outside the screen.
     position.clamp(
       Vector2.zero() + initialSize / 2,
       gameRef.size - initialSize / 2,
     );
-
-    // Returns a random integer from 0 to (PowerUpTypes.values.length - 1).
     int randomIndex = random.nextInt(PowerUpTypes.values.length);
-
-    // Tried to get the generator function corresponding to selected random power.
     final fn = _powerUpMap[PowerUpTypes.values.elementAt(randomIndex)];
-
-    // If the generator function is valid call it and get the power up.
     var powerUp = fn?.call(position, initialSize);
-
-    // If power up is valid, set anchor to center.
     powerUp?.anchor = Anchor.center;
-
-    // If power up is valid, add it to game world.
     if (powerUp != null) {
       gameRef.add(powerUp);
     }

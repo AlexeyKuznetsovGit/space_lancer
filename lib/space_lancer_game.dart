@@ -39,7 +39,7 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
   Offset? pointerStarPosition;
   Offset? pointerCurrentPosition;
   final double joystickRadius = 60;
-  final double deadZoneRadius = 15;
+  final double deadZoneRadius = 10;
   late TimerProgressBar _progressBar;
 
   /*Vector2 fixedResolution = Vector2(540, 960);*/

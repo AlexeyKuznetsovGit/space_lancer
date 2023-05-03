@@ -73,50 +73,27 @@ class EnemyComponent extends SpriteAnimationComponent with HasGameRef<SpaceLance
     add(CircleHitbox()..collisionType = CollisionType.passive);
     _hpText.position = Vector2(0, -20);
 
-    // Add as child of current component.
     add(_hpText);
   }
-
-  /* @override
-  void update(double dt) {
-    super.update(dt);
-    y += _speed * dt;
-    if (y >= gameRef.size.y) {
-      removeFromParent();
-    }
-    _freezeTimer.update(dt);
-  }*/
 
   @override
   void update(double dt) {
     super.update(dt);
-
-    // Sync-up text component and value of hitPoints.
     _hpText.text = '$_hitPoints HP';
-
-    // If hitPoints have reduced to zero,
-    // destroy this enemy.
     if (_hitPoints <= 0) {
       destroy();
       gameRef.increaseScore();
     }
-
     _freezeTimer.update(dt);
-
-    // Update the position of this enemy using its speed and delta time.
     position += moveDirection * _speed * dt;
-
-    // If the enemy leaves the screen, destroy it.
     if (position.y > gameRef.size.y) {
       removeFromParent();
     } else if ((position.x < size.x / 2) || (position.x > (gameRef.size.x - size.x / 2))) {
-      // Enemy is going outside vertical screen bounds, flip its x direction.
       moveDirection.x *= -1;
     }
   }
 
   void destroy() {
-    // Ask audio player to play enemy destroy effect.
     gameRef.addCommand(Command<AudioPlayerComponent>(action: (audioPlayer) {
       audioPlayer.playSfx('laser1.ogg');
     }));
@@ -131,28 +108,13 @@ class EnemyComponent extends SpriteAnimationComponent with HasGameRef<SpaceLance
     super.onCollision(intersectionPoints, other);
 
     if (other is BulletComponent) {
-      // If the other Collidable is a Bullet,
-      // reduce health by level of bullet times 10.
       _hitPoints -= 10;
       gameRef.add(ExplosionComponent(position: position));
     } else if (other is PlayerComponent) {
-      // If the other Collidable is Player, destroy.
       gameRef.add(ExplosionComponent(position: position));
       destroy();
     }
   }
-
-  /* void takeHit() {
-
-    gameRef.addCommand(Command<AudioPlayerComponent>(action: (audioPlayer) {
-      audioPlayer.playSfx('laser1.ogg');
-    }));
-    _hitPoints -= other.level * 10;
-   */ /* removeFromParent();
-    gameRef.add(ExplosionComponent(position: position));
-    gameRef.increaseScore();*/ /*
-  }*/
-
   void freeze() {
     _speed = 50;
     _freezeTimer.stop();
