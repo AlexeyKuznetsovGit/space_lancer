@@ -61,7 +61,7 @@ class PowerUpManager extends Component with HasGameRef<SpaceLancerGame> {
   // This method is responsible for generating a
   // random power up at random location on the screen.
   void _spawnPowerUp() {
-    Vector2 initialSize = Vector2(32, 32);
+    Vector2 initialSize = Vector2(48, 48);
     Vector2 position = Vector2(
       random.nextDouble() * gameRef.size.x,
       random.nextDouble() * gameRef.size.y,
