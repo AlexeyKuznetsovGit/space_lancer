@@ -26,6 +26,7 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
   late final PlayerComponent player;
   late final TextComponent componentCounter;
   late final TextComponent scoreText;
+  late final TextComponent levelText;
   late TextComponent _playerHealth;
   late EnemyCreator _enemyCreator;
   late PowerUpManager _powerUpManager;
@@ -68,8 +69,17 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
 
     add(
       scoreText = TextComponent(
+        text: 'Опыт: 0',
         position: size - Vector2(0, size.y),
         anchor: Anchor.topRight,
+        priority: 1,
+      ),
+    );
+    add(
+      levelText = TextComponent(
+        text: 'Уровень корабля: 1',
+        position: Vector2(0, size.y),
+        anchor: Anchor.topLeft,
         priority: 1,
       ),
     );
@@ -131,9 +141,13 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
     _commandList.addAll(_addLaterCommandList);
     _addLaterCommandList.clear();
 
-    scoreText.text = 'Опыт: $score';
-    _playerHealth.text = 'Прочность: ${player.health}%';
     if (player.isMounted) {
+      score = player.score;
+      levelText.text = 'Уровень корабля: ${player.level}';
+
+      scoreText.text = 'Опыт: ${player.score}';
+      _playerHealth.text = 'Прочность: ${player.health}%';
+
       if (player.health <= 0 && (!camera.shaking)) {
         pauseEngine();
         overlays.remove(PauseButton.id);
@@ -225,7 +239,6 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
   void reset() {
     player.reset();
     _enemyCreator.reset();
-    score = 0;
     _powerUpManager.reset();
     timer = 0;
     bossSpawn = false;
@@ -253,7 +266,7 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
     });
   }
 
-  void increaseScore([int? point]) {
+  /*void increaseScore([int? point]) {
     point == null ? score++ : score += point;
-  }
+  }*/
 }

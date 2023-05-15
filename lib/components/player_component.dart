@@ -1,5 +1,6 @@
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
+import 'package:provider/provider.dart';
 import 'package:space_lancer/components/audio_player_component.dart';
 import 'package:space_lancer/components/boss_bullet.dart';
 import 'package:space_lancer/components/boss_component.dart';
@@ -24,12 +25,26 @@ class PlayerComponent extends SpriteAnimationComponent with HasGameRef<SpaceLanc
   late Timer _bulletTimer;
   late PlayerData _playerData;
   int get score => _playerData.currentScore;
+  int level = 1;
 
   PlayerComponent() : super() {
     _powerUpTimer = Timer(6, onTick: () {
       _shootMultipleBullets = false;
     });
     _bulletTimer = Timer(2, onTick: _createBullet, repeat: true);
+  }
+
+  void addToScore(int points) {
+    _playerData.currentScore += points;
+    // Saves player data to disk.
+    _playerData.save();
+  }
+
+  @override
+  void onMount() {
+    super.onMount();
+
+    _playerData = Provider.of<PlayerData>(game.buildContext!, listen: false);
   }
 
   @override
@@ -93,9 +108,9 @@ class PlayerComponent extends SpriteAnimationComponent with HasGameRef<SpaceLanc
       gameRef.size - size / 2,
     );
 
-    int currentLevel = GameUtils.getCurrentLevel(gameRef.score);
+    int level = GameUtils.getCurrentLevel(score);
 
-    switch (currentLevel) {
+    switch (level) {
       case 1:
         {
           timeShot = 2;
@@ -125,6 +140,7 @@ class PlayerComponent extends SpriteAnimationComponent with HasGameRef<SpaceLanc
   }
 
   void reset() {
+    _playerData.currentScore = 0;
     position = gameRef.size / 2;
     _health = 100;
     speed = 250;

@@ -82,7 +82,6 @@ class EnemyComponent extends SpriteAnimationComponent with HasGameRef<SpaceLance
     _hpText.text = '$_hitPoints HP';
     if (_hitPoints <= 0) {
       destroy();
-      gameRef.increaseScore();
     }
     _freezeTimer.update(dt);
     position += moveDirection * _speed * dt;
@@ -97,6 +96,12 @@ class EnemyComponent extends SpriteAnimationComponent with HasGameRef<SpaceLance
     gameRef.addCommand(Command<AudioPlayerComponent>(action: (audioPlayer) {
       audioPlayer.playSfx('laser1.ogg');
     }));
+
+    final command = Command<PlayerComponent>(action: (player) {
+      // Use the correct killPoint to increase player's score.
+      player.addToScore(enemyData.killPoint);
+    });
+    gameRef.addCommand(command);
 
     removeFromParent();
 

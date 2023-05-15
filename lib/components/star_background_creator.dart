@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flame/components.dart';
 import 'package:flame/sprite.dart';
 import 'package:flame/cache.dart';
+import 'package:space_lancer/components/player_component.dart';
 import 'package:space_lancer/components/star_component.dart';
 import 'package:space_lancer/space_lancer_game.dart';
 
