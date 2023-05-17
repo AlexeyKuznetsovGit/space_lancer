@@ -7,6 +7,7 @@ import 'package:space_lancer/components/audio_player_component.dart';
 import 'package:space_lancer/components/bullet_component.dart';
 import 'package:space_lancer/components/command.dart';
 import 'package:space_lancer/components/explosion_component.dart';
+import 'package:space_lancer/components/force_field_component.dart';
 import 'package:space_lancer/components/player_component.dart';
 import 'package:space_lancer/models/enemy_model.dart';
 import 'package:space_lancer/space_lancer_game.dart';
@@ -113,9 +114,12 @@ class EnemyComponent extends SpriteAnimationComponent with HasGameRef<SpaceLance
     super.onCollision(intersectionPoints, other);
 
     if (other is BulletComponent) {
-      _hitPoints -= 10;
+      _hitPoints -= BulletComponent.damage;
       gameRef.add(ExplosionComponent(position: position));
     } else if (other is PlayerComponent) {
+      gameRef.add(ExplosionComponent(position: position));
+      destroy();
+    } else if(other is ForceFieldComponent){
       gameRef.add(ExplosionComponent(position: position));
       destroy();
     }

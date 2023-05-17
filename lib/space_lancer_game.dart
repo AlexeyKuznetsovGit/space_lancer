@@ -12,6 +12,7 @@ import 'package:space_lancer/components/bullet_component.dart';
 import 'package:space_lancer/components/command.dart';
 import 'package:space_lancer/components/enemy_component.dart';
 import 'package:space_lancer/components/enemy_creator.dart';
+import 'package:space_lancer/components/force_field_component.dart';
 import 'package:space_lancer/components/health_bar.dart';
 import 'package:space_lancer/components/player_component.dart';
 import 'package:space_lancer/components/power_up_manager.dart';
@@ -32,7 +33,8 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
   late PowerUpManager _powerUpManager;
   late AudioPlayerComponent _audioPlayerComponent;
   late BossComponent _boss;
-   Timer timerWinGame = Timer(2);
+  late ForceFieldComponent forceField;
+  Timer timerWinGame = Timer(2);
   double timer = 0;
   double timeLimit = 120;
 
@@ -40,7 +42,7 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
   Offset? pointerStarPosition;
   Offset? pointerCurrentPosition;
   final double joystickRadius = 60;
-  final double deadZoneRadius = 10;
+  final double deadZoneRadius = 7;
   late TimerProgressBar _progressBar;
 
   /*Vector2 fixedResolution = Vector2(540, 960);*/
@@ -50,10 +52,8 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
   int score = 0;
   bool bossSpawn = false;
 
-
   @override
   Future<void> onLoad() async {
-
     _boss = BossComponent();
     await images.loadAll([
       'bullet.png',
@@ -63,8 +63,11 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
       'stars.png',
       'freeze.png',
       'icon_plusSmall.png',
-      'multi_fire.png',
-      'boss_ship.png'
+      'multi_shot.png',
+      'boss_ship.png',
+      'force_field.png',
+      'shield.png',
+      'power.png'
     ]);
 
     add(
@@ -77,8 +80,8 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
     );
     add(
       levelText = TextComponent(
-        text: 'Уровень корабля: 1',
-        position: Vector2(0, size.y),
+        text: 'Уровень: 1',
+        position: Vector2(10, 10),
         anchor: Anchor.topLeft,
         priority: 1,
       ),
@@ -89,6 +92,7 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
     add(_enemyCreator = EnemyCreator(timer: timer, timeLimit: timeLimit));
     add(_powerUpManager = PowerUpManager());
     add(StarBackGroundCreator());
+
     add(player = PlayerComponent());
     _playerHealth = TextComponent(
       text: 'Прочность: 100%',
@@ -141,23 +145,23 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
     _commandList.addAll(_addLaterCommandList);
     _addLaterCommandList.clear();
 
-    if (player.isMounted) {
+    if (player.isMounted || player.isRemoved) {
       score = player.score;
-      levelText.text = 'Уровень корабля: ${player.level}';
+      levelText.text = 'Уровень: ${player.level}';
 
       scoreText.text = 'Опыт: ${player.score}';
       _playerHealth.text = 'Прочность: ${player.health}%';
 
       if (player.health <= 0 && (!camera.shaking)) {
-        pauseEngine();
-        overlays.remove(PauseButton.id);
-        overlays.add(GameOverMenu.id);
+          pauseEngine();
+          overlays.remove(PauseButton.id);
+          overlays.add(GameOverMenu.id);
       }
     }
     if (_boss.isMounted) {
       if (_boss.hitPoints <= 0 && (!camera.shaking)) {
         player.stopFire();
-        timerWinGame = Timer(2, onTick: (){
+        timerWinGame = Timer(2, onTick: () {
           pauseEngine();
           overlays.remove(PauseButton.id);
           overlays.add(GameWin.id);
@@ -165,7 +169,6 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
       }
     }
     timerWinGame.update(dt);
-
   }
 
   @override
@@ -237,6 +240,10 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
   }
 
   void reset() {
+    if (player.isRemoved) {
+      add(player);
+    }
+
     player.reset();
     _enemyCreator.reset();
     _powerUpManager.reset();
@@ -266,7 +273,7 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
     });
   }
 
-  /*void increaseScore([int? point]) {
+/*void increaseScore([int? point]) {
     point == null ? score++ : score += point;
   }*/
 }

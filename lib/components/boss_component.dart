@@ -49,35 +49,31 @@ class BossComponent extends SpriteComponent with HasGameRef<SpaceLancerGame>, Co
     anchor = Anchor.topCenter;
 
     size = Vector2(128, 128);
-    print(size.x);
     _changeDirectionTimer = Timer(1, onTick: () {
       _xDirection = Random().nextBool() ? 1 : -1;
     }, repeat: true);
   }
-  final _superBulletAngles = [0.5, 0.3, 0.0, -0.5, -0.3];
-  void _createBullet() {
 
-   /* BossBullet bullet = BossBullet(position: position - Vector2(size.x / 4, -size.y), angle: 0.0);
+  final _superBulletAngles = [0.5, 0.3, 0.0, -0.5, -0.3];
+
+  void _createBullet() {
+    /* BossBullet bullet = BossBullet(position: position - Vector2(size.x / 4, -size.y), angle: 0.0);
     gameRef.add(bullet);*/
     gameRef.addCommand(Command<AudioPlayerComponent>(action: (audioPlayer) {
       audioPlayer.playSfx('laserSmall_001.ogg');
     }));
     gameRef.addAll(
       _superBulletAngles.map(
-            (angle) => BossBullet(
+        (angle) => BossBullet(
           position: position - Vector2(size.x / 4, -size.y),
           angle: angle,
         ),
       ),
     );
-
   }
-
-
 
   @override
   Future<void> onLoad() async {
-
     position = Vector2(gameRef.size.x / 2, gameRef.size.y / 4);
     sprite = Sprite(gameRef.images.fromCache('boss_ship.png'), srcSize: Vector2(128, 128));
     add(CircleHitbox()..collisionType = CollisionType.passive);
@@ -94,7 +90,7 @@ class BossComponent extends SpriteComponent with HasGameRef<SpaceLancerGame>, Co
 
     // Sync-up text component and value of hitPoints.
     _hpText.text = '$hitPoints HP';
-    if(hitPoints <= hitPoints/2){
+    if (hitPoints <= hitPoints / 2) {
       _currentSpeed = 250;
       speed = _currentSpeed;
       timeBullet = 1;
@@ -103,12 +99,11 @@ class BossComponent extends SpriteComponent with HasGameRef<SpaceLancerGame>, Co
     // destroy this enemy.
     if (hitPoints <= 0) {
       destroy();
-      gameRef.increaseScore(100);
     }
     _bulletTimer.update(dt);
 
     _freezeTimer.update(dt);
-     _changeDirectionTimer.update(dt);
+    _changeDirectionTimer.update(dt);
     position.x += speed * _xDirection * dt;
 
     if (position.x <= 0) {
@@ -128,11 +123,11 @@ class BossComponent extends SpriteComponent with HasGameRef<SpaceLancerGame>, Co
     }
   }
 
-  void reset(){
-   hitPoints = 1000;
-   speed = 150;
-   timeBullet = 2;
-   _currentSpeed = 150;
+  void reset() {
+    hitPoints = 1000;
+    speed = 150;
+    timeBullet = 2;
+    _currentSpeed = 150;
   }
 
   void destroy() {
@@ -140,6 +135,12 @@ class BossComponent extends SpriteComponent with HasGameRef<SpaceLancerGame>, Co
     gameRef.addCommand(Command<AudioPlayerComponent>(action: (audioPlayer) {
       audioPlayer.playSfx('laser1.ogg');
     }));
+
+    final command = Command<PlayerComponent>(action: (player) {
+      // Use the correct killPoint to increase player's score.
+      player.addToScore(100);
+    });
+    gameRef.addCommand(command);
 
     removeFromParent();
   }
@@ -149,7 +150,8 @@ class BossComponent extends SpriteComponent with HasGameRef<SpaceLancerGame>, Co
     super.onCollision(intersectionPoints, other);
 
     if (other is BulletComponent) {
-      hitPoints -= 10;
+      hitPoints -= BulletComponent.damage;
+      gameRef.add(ExplosionComponent(position: position));
     }
   }
 

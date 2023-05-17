@@ -100,6 +100,45 @@ class Health extends PowerUp {
   }
 }
 
+class PowerBullet extends PowerUp {
+  PowerBullet({Vector2? position, Vector2? size})
+      : super(position: position, size: size);
+
+  @override
+  Sprite getSprite() {
+    return PowerUpManager.powerBullet;
+  }
+
+  @override
+  void onActivated() {
+    // Register a command to increase player health.
+    final command = Command<PlayerComponent>(action: (player) {
+      player.powerBullet();
+    });
+    gameRef.addCommand(command);
+  }
+}
+
+class ForceField extends PowerUp {
+  ForceField({Vector2? position, Vector2? size})
+      : super(position: position, size: size);
+
+  @override
+  Sprite getSprite() {
+    return PowerUpManager.forceField;
+  }
+
+  @override
+  void onActivated() {
+    // Register a command to increase player health.
+    final command = Command<PlayerComponent>(action: (player) {
+      player.forceField();
+    });
+    gameRef.addCommand(command);
+  }
+}
+
+
 // This power up freezes all enemies for some time.
 class Freeze extends PowerUp {
   Freeze({Vector2? position, Vector2? size})

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:provider/provider.dart';
@@ -9,27 +11,38 @@ import 'package:space_lancer/components/bullet_component.dart';
 import 'package:space_lancer/components/command.dart';
 import 'package:space_lancer/components/enemy_component.dart';
 import 'package:space_lancer/components/explosion_component.dart';
+import 'package:space_lancer/components/force_field_component.dart';
 import 'package:space_lancer/components/getCurrentLevel.dart';
 import 'package:space_lancer/models/player_data.dart';
+import 'package:space_lancer/screens/widgets/game_over.dart';
+import 'package:space_lancer/screens/widgets/pause_button.dart';
 import 'package:space_lancer/space_lancer_game.dart';
 
 class PlayerComponent extends SpriteAnimationComponent with HasGameRef<SpaceLancerGame>, CollisionCallbacks {
   Vector2 moveDirection = Vector2.zero();
-  static double speed = 250;
- static double timeShot = 2;
+  static double _speed = 250;
+  static double _timeShot = 2;
   int _health = 100;
+  late ForceFieldComponent forceFieldSprite;
+  double _currentSpeed = 250;
 
   int get health => _health;
   bool _shootMultipleBullets = false;
   late Timer _powerUpTimer;
   late Timer _bulletTimer;
   late PlayerData _playerData;
+  late BulletComponent bullet;
+
   int get score => _playerData.currentScore;
   int level = 1;
 
   PlayerComponent() : super() {
     _powerUpTimer = Timer(6, onTick: () {
       _shootMultipleBullets = false;
+      _speed = _currentSpeed;
+      bullet.changeDamage = 10;
+      bullet.changeSpeed = 350;
+      forceFieldSprite.removeFromParent();
     });
     _bulletTimer = Timer(2, onTick: _createBullet, repeat: true);
   }
@@ -43,12 +56,21 @@ class PlayerComponent extends SpriteAnimationComponent with HasGameRef<SpaceLanc
   @override
   void onMount() {
     super.onMount();
-
+    forceFieldSprite = ForceFieldComponent(position: position.clone());
+    /* forceFieldSprite = SpriteComponent.fromImage(
+      gameRef.images.fromCache('force_field.png'),
+      srcSize: Vector2(1024,1024),
+      anchor: Anchor.center,
+      position: position.clone(), // Set your position here
+      size: Vector2(100, 100), // Set your size here (by default it is 0),
+    );*/
     _playerData = Provider.of<PlayerData>(game.buildContext!, listen: false);
   }
 
   @override
   Future<void> onLoad() async {
+/*    gameRef.add(ForceFieldComponent(position: position));*/
+
     add(CircleHitbox());
     animation = SpriteAnimation.fromFrameData(
       gameRef.images.fromCache('player.png'),
@@ -68,7 +90,8 @@ class PlayerComponent extends SpriteAnimationComponent with HasGameRef<SpaceLanc
   final _bulletAngles = 0.0;
 
   void _createBullet() {
-    BulletComponent bullet = BulletComponent(position: position + Vector2(-8, -size.y / 2), angle: _bulletAngles);
+    log(_speed.toString(), name: "СКОРОСТЬ");
+    bullet = BulletComponent(position: position + Vector2(-8, -size.y / 2), angle: _bulletAngles);
     gameRef.add(bullet);
     gameRef.addCommand(Command<AudioPlayerComponent>(action: (audioPlayer) {
       audioPlayer.playSfx('laserSmall_001.ogg');
@@ -82,10 +105,7 @@ class PlayerComponent extends SpriteAnimationComponent with HasGameRef<SpaceLanc
           ),
         ),
       );
-
     }
-
-
   }
 
   void increaseHealthBy(int points) {
@@ -99,52 +119,66 @@ class PlayerComponent extends SpriteAnimationComponent with HasGameRef<SpaceLanc
   @override
   void update(double dt) {
     super.update(dt);
+    /*if (forceFieldComponent.isMounted && !_activeForceField) {
+      remove(forceFieldComponent);
+    }*/
+    forceFieldSprite.position = position.clone();
     _powerUpTimer.update(dt);
     _bulletTimer.update(dt);
-    position += moveDirection.normalized() * speed * dt;
+    position += moveDirection.normalized() * _speed * dt;
 
     position.clamp(
       Vector2.zero() + size / 2,
       gameRef.size - size / 2,
     );
 
-    int level = GameUtils.getCurrentLevel(score);
-
-    switch (level) {
-      case 1:
-        {
-          timeShot = 2;
-          speed = 250;
-          break;
-        }
-      case 2:
-        {
-          timeShot = 1.5;
-          speed = 300;
-          break;
-        }
-      case 3:
-        {
-          timeShot = 1;
-          speed = 350;
-          break;
-        }
-      case 4:
-        {
-          timeShot = 0.5;
-          speed = 400;
-          break;
-        }
+    level = GameUtils.getCurrentLevel(score);
+    if (forceFieldSprite.isMounted) {
+      _speed = 500;
+    } else {
+      switch (level) {
+        case 1:
+          {
+            _timeShot = 2;
+            _currentSpeed = 250;
+            _speed = _currentSpeed;
+            break;
+          }
+        case 2:
+          {
+            _timeShot = 1.5;
+            _currentSpeed = 300;
+            _speed = _currentSpeed;
+            break;
+          }
+        case 3:
+          {
+            _timeShot = 1;
+            _currentSpeed = 350;
+            _speed = _currentSpeed;
+            break;
+          }
+        case 4:
+          {
+            _timeShot = 0.5;
+            _currentSpeed = 400;
+            _speed = _currentSpeed;
+            break;
+          }
+      }
     }
-    _bulletTimer.limit = timeShot;
+
+    _bulletTimer.limit = _timeShot;
   }
 
   void reset() {
+    forceFieldSprite.removeFromParent();
     _playerData.currentScore = 0;
     position = gameRef.size / 2;
     _health = 100;
-    speed = 250;
-    timeShot = 2;
+    _currentSpeed = 250;
+    _speed = 250;
+    _timeShot = 2;
     beginFire();
   }
 
@@ -164,6 +198,16 @@ class PlayerComponent extends SpriteAnimationComponent with HasGameRef<SpaceLanc
     moveDirection = newMoveDirection;
   }
 
+  void destroy() {
+    gameRef.addCommand(Command<AudioPlayerComponent>(action: (audioPlayer) {
+      audioPlayer.playSfx('laser1.ogg');
+    }));
+    gameRef.add(ExplosionComponent(position: position));
+    removeFromParent();
+
+
+  }
+
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollision(intersectionPoints, other);
@@ -173,25 +217,46 @@ class PlayerComponent extends SpriteAnimationComponent with HasGameRef<SpaceLanc
       _health -= 10;
       if (_health <= 0) {
         _health = 0;
+        destroy();
       }
     }
-    if(other is BossComponent){
+    if (other is BossComponent) {
       gameRef.add(ExplosionComponent(position: position));
       position.y += 50;
       gameRef.camera.shake(intensity: 20);
       _health -= 10;
       if (_health <= 0) {
         _health = 0;
+        destroy();
       }
-
     }
-    if(other is BossBullet){
+    if (other is BossBullet) {
       gameRef.camera.shake(intensity: 20);
       _health -= 10;
       if (_health <= 0) {
         _health = 0;
+        destroy();
       }
     }
+  }
+
+  void powerBullet() {
+    bullet.changeDamage = 20;
+    bullet.changeSpeed = 500;
+    _powerUpTimer.stop();
+    _powerUpTimer.start();
+  }
+
+  void forceField() {
+    if (forceFieldSprite.isMounted) {
+      forceFieldSprite.removeFromParent();
+      forceFieldSprite = ForceFieldComponent(position: position.clone());
+    }
+    /*gameRef.add(forceFieldSprite);*/
+
+    gameRef.add(forceFieldSprite);
+    _powerUpTimer.stop();
+    _powerUpTimer.start();
   }
 
   void shootMultipleBullets() {

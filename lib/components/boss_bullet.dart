@@ -5,6 +5,7 @@ import 'package:flame/components.dart';
 import 'package:space_lancer/components/boss_component.dart';
 import 'package:space_lancer/components/enemy_component.dart';
 import 'package:space_lancer/components/explosion_component.dart';
+import 'package:space_lancer/components/force_field_component.dart';
 import 'package:space_lancer/components/getCurrentLevel.dart';
 import 'package:space_lancer/components/player_component.dart';
 import 'package:space_lancer/space_lancer_game.dart';
@@ -15,7 +16,7 @@ class BossBullet extends SpriteAnimationComponent with HasGameRef<SpaceLancerGam
   late final Vector2 velocity;
   Vector2 direction = Vector2(0, 1);
 
-  BossBullet({required super.position, super.angle}) : super(size: Vector2(16, 32)){
+  BossBullet({required super.position, super.angle}) : super(size: Vector2(16, 32)) {
     /*angle = pi;*/
   }
 
@@ -40,6 +41,9 @@ class BossBullet extends SpriteAnimationComponent with HasGameRef<SpaceLancerGam
     super.onCollisionStart(points, other);
     if (other is PlayerComponent) {
       /*  other.takeHit();*/
+      gameRef.add(ExplosionComponent(position: position.clone()));
+      removeFromParent();
+    } else if (other is ForceFieldComponent) {
       gameRef.add(ExplosionComponent(position: position.clone()));
       removeFromParent();
     }

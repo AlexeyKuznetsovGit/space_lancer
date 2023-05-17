@@ -1,4 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_exit_app/flutter_exit_app.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:space_lancer/models/player_data.dart';
@@ -74,7 +78,13 @@ class MainScreen extends StatelessWidget {
             SizedBox(
               width: MediaQuery.of(context).size.width / 3,
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  if (Platform.isAndroid) {
+                    FlutterExitApp.exitApp();
+                  } else if (Platform.isIOS) {
+                    FlutterExitApp.exitApp(iosForceExit: true);
+                  }
+                },
                 child: const Text('Exit'),
               ),
             ),

@@ -8,7 +8,14 @@ import 'package:space_lancer/space_lancer_game.dart';
 
 class BulletComponent extends SpriteAnimationComponent
     with HasGameRef<SpaceLancerGame>, CollisionCallbacks {
-  static const  speed = 350.0;
+  static double speed = 350;
+  double get getSpeed => speed;
+  set changeSpeed(double value) => speed = value;
+
+  static int damage = 10;
+  int get getDamage => damage;
+  set changeDamage(int value) => damage = value;
+
   late final Vector2 velocity;
   final Vector2 deltaPosition = Vector2.zero();
 
@@ -36,12 +43,12 @@ class BulletComponent extends SpriteAnimationComponent
     super.onCollisionStart(points, other);
     if (other is EnemyComponent) {
     /*  other.takeHit();*/
-      gameRef.add(ExplosionComponent(position: position.clone()));
+     /* gameRef.add(ExplosionComponent(position: position.clone()));*/
       removeFromParent();
     }
     if (other is BossComponent) {
       /*  other.takeHit();*/
-      gameRef.add(ExplosionComponent(position: position.clone()));
+      /*gameRef.add(ExplosionComponent(position: position.clone()));*/
       removeFromParent();
     }
   }

@@ -6,11 +6,10 @@ import 'package:space_lancer/space_lancer_game.dart';
 
 import 'power_ups.dart';
 
-typedef PowerUpMap
-= Map<PowerUpTypes, PowerUp Function(Vector2 position, Vector2 size)>;
+typedef PowerUpMap = Map<PowerUpTypes, PowerUp Function(Vector2 position, Vector2 size)>;
 
 // Represents the types of power up we have to offer.
-enum PowerUpTypes { health, freeze, multiFire }
+enum PowerUpTypes { health, freeze, multiFire, forceField , powerBullet}
 
 // This class/component is responsible for spawning random power ups
 // at random locations in the game world.
@@ -30,21 +29,25 @@ class PowerUpManager extends Component with HasGameRef<SpaceLancerGame> {
   static late Sprite healthSprite;
   static late Sprite freezeSprite;
   static late Sprite multiFireSprite;
+  static late Sprite forceField;
+  static late Sprite powerBullet;
 
   // A private static map which stores a generator function for each power up.
   static final PowerUpMap _powerUpMap = {
+    PowerUpTypes.powerBullet: (position, size) => PowerBullet(position: position, size: size),
+    PowerUpTypes.forceField: (position, size) => ForceField(position: position, size: size),
     PowerUpTypes.health: (position, size) => Health(
-      position: position,
-      size: size,
-    ),
+          position: position,
+          size: size,
+        ),
     PowerUpTypes.freeze: (position, size) => Freeze(
-      position: position,
-      size: size,
-    ),
+          position: position,
+          size: size,
+        ),
     PowerUpTypes.multiFire: (position, size) => MultiFire(
-      position: position,
-      size: size,
-    ),
+          position: position,
+          size: size,
+        ),
   };
 
   PowerUpManager() : super() {
@@ -86,7 +89,9 @@ class PowerUpManager extends Component with HasGameRef<SpaceLancerGame> {
 
     healthSprite = Sprite(gameRef.images.fromCache('icon_plusSmall.png'));
     freezeSprite = Sprite(gameRef.images.fromCache('freeze.png'));
-    multiFireSprite = Sprite(gameRef.images.fromCache('multi_fire.png'));
+    multiFireSprite = Sprite(gameRef.images.fromCache('multi_shot.png'));
+    forceField = Sprite(gameRef.images.fromCache('shield.png'));
+    powerBullet = Sprite(gameRef.images.fromCache('power.png'));
 
     super.onMount();
   }
