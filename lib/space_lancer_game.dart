@@ -34,6 +34,7 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
   late AudioPlayerComponent _audioPlayerComponent;
   late BossComponent _boss;
   late ForceFieldComponent forceField;
+  Rect boundaries = Rect.zero;
   Timer timerWinGame = Timer(2);
   double timer = 0;
   double timeLimit = 120;
@@ -54,6 +55,7 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
 
   @override
   Future<void> onLoad() async {
+    boundaries = Rect.fromLTWH(10, 0, size.x - 20, size.y);
     _boss = BossComponent();
     await images.loadAll([
       'bullet.png',
@@ -233,6 +235,8 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
       }
       canvas.drawCircle(delta, 20, Paint()..color = Colors.white.withAlpha(100));
     }
+
+    canvas.drawRect(boundaries,  Paint()..color = Colors.green.withAlpha(100));
   }
 
   void addCommand(Command command) {

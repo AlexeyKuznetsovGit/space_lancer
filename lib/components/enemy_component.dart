@@ -61,6 +61,7 @@ class EnemyComponent extends SpriteAnimationComponent with HasGameRef<SpaceLance
     }
   }
 
+
   @override
   Future<void> onLoad() async {
     animation = await gameRef.loadSpriteAnimation(
@@ -85,12 +86,26 @@ class EnemyComponent extends SpriteAnimationComponent with HasGameRef<SpaceLance
       destroy();
     }
     _freezeTimer.update(dt);
-    position += moveDirection * _speed * dt;
+    position += moveDirection.normalized() * _speed * dt;
+    if(enemyData.hMove){
+      if (position.x -size.x/2 <= gameRef.boundaries.left) {
+        moveDirection.x = 1;
+      } else if (position.x >= gameRef.boundaries.right-size.x) {
+        moveDirection.x = -1;
+      }
+    } else{
+       x = x.clamp(gameRef.boundaries.left, gameRef.boundaries.right - width);
+    }
+
+
+
+
     if (position.y > gameRef.size.y) {
       removeFromParent();
-    } else if ((position.x < size.x / 2) || (position.x > (gameRef.size.x - size.x / 2))) {
-      moveDirection.x *= -1;
     }
+
+
+
   }
 
   void destroy() {

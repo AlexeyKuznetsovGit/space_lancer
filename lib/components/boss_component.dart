@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:flame/cache.dart';
 import 'package:flame/collisions.dart';
@@ -20,6 +21,9 @@ class BossComponent extends SpriteComponent with HasGameRef<SpaceLancerGame>, Co
   double _xDirection = 1.0;
   double _yDirection = 1.0;
   double _yPosition = 0;
+  static const double minY = 0;
+  static const double maxY = 0.5; // Максимальная высота - половина экрана
+  Random random = Random();
   double timeBullet = 2;
   late Timer _bulletTimer;
   late Timer _freezeTimer;
@@ -104,11 +108,14 @@ class BossComponent extends SpriteComponent with HasGameRef<SpaceLancerGame>, Co
 
     _freezeTimer.update(dt);
     _changeDirectionTimer.update(dt);
-    position.x += speed * _xDirection * dt;
 
-    if (position.x <= 0) {
+
+
+    position.x += speed * _xDirection * dt;
+   /* x = x.clamp(boundaries.left, boundaries.right - width);*/
+    if (position.x - size.x/2<= gameRef.boundaries.left) {
       _xDirection = 1;
-    } else if (position.x >= gameRef.size.x) {
+    } else if (position.x >= gameRef.boundaries.right) {
       _xDirection = -1;
     }
 
@@ -122,6 +129,7 @@ class BossComponent extends SpriteComponent with HasGameRef<SpaceLancerGame>, Co
       _yDirection = 1;
     }
   }
+
 
   void reset() {
     hitPoints = 1000;
