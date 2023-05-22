@@ -28,7 +28,9 @@ class PlayerComponent extends SpriteAnimationComponent with HasGameRef<SpaceLanc
 
   int get health => _health;
   bool _shootMultipleBullets = false;
-  late Timer _powerUpTimer;
+  late Timer _powerUpShieldTimer;
+  late Timer _powerUpMultiTimer;
+  late Timer _powerUpForceTimer;
   late Timer _bulletTimer;
   late PlayerData _playerData;
   late BulletComponent bullet;
@@ -37,12 +39,16 @@ class PlayerComponent extends SpriteAnimationComponent with HasGameRef<SpaceLanc
   int level = 1;
 
   PlayerComponent() : super() {
-    _powerUpTimer = Timer(6, onTick: () {
+    _powerUpMultiTimer = Timer(6, onTick: () {
       _shootMultipleBullets = false;
+    });
+    _powerUpShieldTimer = Timer(6, onTick: () {
       _speed = _currentSpeed;
+      forceFieldSprite.removeFromParent();
+    });
+    _powerUpForceTimer = Timer(6, onTick: () {
       bullet.changeDamage = 10;
       bullet.changeSpeed = 350;
-      forceFieldSprite.removeFromParent();
     });
     _bulletTimer = Timer(2, onTick: _createBullet, repeat: true);
   }
@@ -91,11 +97,8 @@ class PlayerComponent extends SpriteAnimationComponent with HasGameRef<SpaceLanc
 
   void _createBullet() {
     log(_speed.toString(), name: "СКОРОСТЬ");
-    bullet = BulletComponent(position: position + Vector2(-8, -size.y / 2), angle: _bulletAngles);
-    gameRef.add(bullet);
-    gameRef.addCommand(Command<AudioPlayerComponent>(action: (audioPlayer) {
-      audioPlayer.playSfx('laserSmall_001.ogg');
-    }));
+
+
     if (_shootMultipleBullets) {
       gameRef.addAll(
         _superBulletAngles.map(
@@ -105,7 +108,13 @@ class PlayerComponent extends SpriteAnimationComponent with HasGameRef<SpaceLanc
           ),
         ),
       );
+    } else{
+      bullet = BulletComponent(position: position + Vector2(-8, -size.y / 2), angle: _bulletAngles);
+      gameRef.add(bullet);
     }
+    gameRef.addCommand(Command<AudioPlayerComponent>(action: (audioPlayer) {
+      audioPlayer.playSfx('laserSmall_001.ogg');
+    }));
   }
 
   void increaseHealthBy(int points) {
@@ -119,11 +128,10 @@ class PlayerComponent extends SpriteAnimationComponent with HasGameRef<SpaceLanc
   @override
   void update(double dt) {
     super.update(dt);
-    /*if (forceFieldComponent.isMounted && !_activeForceField) {
-      remove(forceFieldComponent);
-    }*/
     forceFieldSprite.position = position.clone();
-    _powerUpTimer.update(dt);
+    _powerUpForceTimer.update(dt);
+    _powerUpShieldTimer.update(dt);
+    _powerUpMultiTimer.update(dt);
     _bulletTimer.update(dt);
     position += moveDirection.normalized() * _speed * dt;
 
@@ -243,8 +251,8 @@ class PlayerComponent extends SpriteAnimationComponent with HasGameRef<SpaceLanc
   void powerBullet() {
     bullet.changeDamage = 20;
     bullet.changeSpeed = 500;
-    _powerUpTimer.stop();
-    _powerUpTimer.start();
+    _powerUpForceTimer.stop();
+    _powerUpForceTimer.start();
   }
 
   void forceField() {
@@ -255,13 +263,13 @@ class PlayerComponent extends SpriteAnimationComponent with HasGameRef<SpaceLanc
     /*gameRef.add(forceFieldSprite);*/
 
     gameRef.add(forceFieldSprite);
-    _powerUpTimer.stop();
-    _powerUpTimer.start();
+    _powerUpShieldTimer.stop();
+    _powerUpShieldTimer.start();
   }
 
   void shootMultipleBullets() {
     _shootMultipleBullets = true;
-    _powerUpTimer.stop();
-    _powerUpTimer.start();
+    _powerUpMultiTimer.stop();
+    _powerUpMultiTimer.start();
   }
 }

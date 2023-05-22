@@ -8,6 +8,7 @@ void main() async {
 */
 import 'package:flame/flame.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
@@ -16,8 +17,8 @@ import 'package:space_lancer/models/settings.dart';
 import 'package:space_lancer/screens/main_screen.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   await Flame.device.fullScreen();
 
   // Initialize hive.
@@ -79,7 +80,7 @@ Future<PlayerData> getPlayerData() async {
       PlayerData.fromMap(PlayerData.defaultData),
     );
   }
-
+  await Future.delayed(Duration(seconds: 2));
   return box.get(PlayerData.playerDataKey)!;
 }
 

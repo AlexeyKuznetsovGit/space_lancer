@@ -61,7 +61,6 @@ class EnemyComponent extends SpriteAnimationComponent with HasGameRef<SpaceLance
     }
   }
 
-
   @override
   Future<void> onLoad() async {
     animation = await gameRef.loadSpriteAnimation(

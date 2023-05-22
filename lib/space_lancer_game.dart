@@ -236,7 +236,6 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
       canvas.drawCircle(delta, 20, Paint()..color = Colors.white.withAlpha(100));
     }
 
-    canvas.drawRect(boundaries,  Paint()..color = Colors.green.withAlpha(100));
   }
 
   void addCommand(Command command) {

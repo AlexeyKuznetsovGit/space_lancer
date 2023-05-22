@@ -9,7 +9,7 @@ import 'package:space_lancer/space_lancer_game.dart';
 class EnemyCreator extends Component with HasGameRef<SpaceLancerGame> {
   final Random random = Random();
   final _halfWidth = EnemyComponent.initialSize.x / 2;
-   double timer;
+  double timer;
   final double timeLimit;
   late Timer _timer;
   late Timer _freezeTimer;
@@ -24,35 +24,26 @@ class EnemyCreator extends Component with HasGameRef<SpaceLancerGame> {
     });
   }
 
-  /* Vector2 createPosition(int index){
+  List<Vector2> createPosition(int countEnemy) {
+    final random = Random();
+    final positions = <Vector2>[];
 
-     Vector2(
-       _halfWidth + (gameRef.size.x - _halfWidth) * random.nextDouble(),
-       0,
-     );
+    for (int i = 0; i < countEnemy; i++) {
+      Vector2 position;
 
-     final random = Random();
-     final positions = <Vector2>[];
-
-     for (int i = 0; i < numberOfComponents; i++) {
-       Vector2 position;
-
-       do {
-         final x = random.nextDouble() * screenWidth;
-         position = Vector2(x, 0);
-       } while (positions.any((p) => p.distanceTo(position) < 50)); // Убедитесь, что расстояние между компонентами не меньше 50
-
-       positions.add(position);
-
-       final component = MyComponent(position);
-
-    return ;
-   }*/
+      do {
+        final x = random.nextDouble() * gameRef.size.x;
+        position = Vector2(x, 0);
+      } while (positions.any((p) => p.distanceTo(position) < EnemyComponent.initialSize.x));
+      positions.add(position); // Убедитесь, что расстояние между компонентами не меньше 50
+    }
+    return positions;
+  }
 
   void _spawnEnemy() {
     late int countEnemy;
     int currentLevel = GameUtils.getCurrentLevel(gameRef.score);
-    /* Vector2 initialSize = Vector2(32, 32);*/
+    /*Vector2 initialSize = Vector2(32, 32);*/
     /*  Vector2 position = Vector2(random.nextDouble() * gameRef.size.x, 0);*/
 
     switch (currentLevel) {
@@ -77,19 +68,21 @@ class EnemyCreator extends Component with HasGameRef<SpaceLancerGame> {
           break;
         }
     }
+    List<Vector2> positions = createPosition(countEnemy);
+    print(positions.toString());
     gameRef.addAll(
       List.generate(countEnemy, (index) {
-        Vector2 position = Vector2(
+        /*positions[index] = Vector2(
           _halfWidth + (gameRef.size.x - _halfWidth) * random.nextDouble(),
           0,
-        );
+        );*/
 
         /*position.clamp(
           Vector2.zero() + EnemyComponent.initialSize / 2,
           gameRef.size - EnemyComponent.initialSize / 2,
         );*/
         final enemyData = _enemyDataList.elementAt(currentLevel <= 2 ? 0 : 1);
-        return EnemyComponent(size: EnemyComponent.initialSize, position: position, enemyData: enemyData);
+        return EnemyComponent(size: EnemyComponent.initialSize, position: positions[index], enemyData: enemyData);
       }),
     );
   }
