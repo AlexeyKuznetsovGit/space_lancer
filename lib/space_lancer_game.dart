@@ -75,7 +75,7 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
     add(
       scoreText = TextComponent(
         text: 'Опыт: 0',
-        position: size - Vector2(0, size.y),
+        position: Vector2(size.x -10, 10),
         anchor: Anchor.topRight,
         priority: 1,
       ),
@@ -155,9 +155,9 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
       _playerHealth.text = 'Прочность: ${player.health}%';
 
       if (player.health <= 0 && (!camera.shaking)) {
-          pauseEngine();
-          overlays.remove(PauseButton.id);
-          overlays.add(GameOverMenu.id);
+        pauseEngine();
+        overlays.remove(PauseButton.id);
+        overlays.add(GameOverMenu.id);
       }
     }
     if (_boss.isMounted) {
@@ -235,11 +235,17 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
       }
       canvas.drawCircle(delta, 20, Paint()..color = Colors.white.withAlpha(100));
     }
-
   }
 
   void addCommand(Command command) {
     _addLaterCommandList.add(command);
+  }
+
+  void restoreHealth() {
+    if (player.isRemoved) {
+      add(player);
+      player.changeHealth = 100;
+    }
   }
 
   void reset() {

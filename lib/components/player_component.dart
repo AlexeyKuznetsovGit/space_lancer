@@ -26,6 +26,8 @@ class PlayerComponent extends SpriteAnimationComponent with HasGameRef<SpaceLanc
   late ForceFieldComponent forceFieldSprite;
   double _currentSpeed = 250;
 
+  set changeHealth(int v) => _health = v;
+
   int get health => _health;
   bool _shootMultipleBullets = false;
   late Timer _powerUpShieldTimer;
@@ -98,7 +100,6 @@ class PlayerComponent extends SpriteAnimationComponent with HasGameRef<SpaceLanc
   void _createBullet() {
     log(_speed.toString(), name: "СКОРОСТЬ");
 
-
     if (_shootMultipleBullets) {
       gameRef.addAll(
         _superBulletAngles.map(
@@ -108,7 +109,7 @@ class PlayerComponent extends SpriteAnimationComponent with HasGameRef<SpaceLanc
           ),
         ),
       );
-    } else{
+    } else {
       bullet = BulletComponent(position: position + Vector2(-8, -size.y / 2), angle: _bulletAngles);
       gameRef.add(bullet);
     }
@@ -212,8 +213,6 @@ class PlayerComponent extends SpriteAnimationComponent with HasGameRef<SpaceLanc
     }));
     gameRef.add(ExplosionComponent(position: position));
     removeFromParent();
-
-
   }
 
   @override

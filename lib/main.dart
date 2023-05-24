@@ -8,7 +8,7 @@ void main() async {
 */
 import 'package:flame/flame.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
@@ -17,11 +17,13 @@ import 'package:space_lancer/models/settings.dart';
 import 'package:space_lancer/screens/main_screen.dart';
 
 void main() async {
-  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
-  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
-  await Flame.device.fullScreen();
+  WidgetsFlutterBinding.ensureInitialized();
+  Flame.device.setPortraitUpOnly();
+  Flame.device.fullScreen();
+/*  SystemChrome.setEnabledSystemUIOverlays(<SystemUiOverlay>[SystemUiOverlay.bottom]);*/
 
-  // Initialize hive.
+  /*MobileAds.initialize();*/
+
   await initHive();
 
   runApp(MultiProvider(
@@ -36,8 +38,7 @@ void main() async {
       ),
     ],
     builder: (context, child) {
-      // We use .value constructor here because the required objects
-      // are already created by upstream FutureProviders.
+
       return MultiProvider(
         providers: [
           ChangeNotifierProvider<Settings>.value(
@@ -54,7 +55,7 @@ void main() async {
         brightness: Brightness.dark,
         scaffoldBackgroundColor: Colors.black,
       ),
-      home: const MainScreen(),
+      home: MainScreen(),
     ),
   ));
 }
@@ -67,31 +68,25 @@ Future<void> initHive() async {
 }
 
 Future<PlayerData> getPlayerData() async {
-  // Open the player data box and read player data from it.
   final box = await Hive.openBox<PlayerData>(PlayerData.playerDataBox);
   final playerData = box.get(PlayerData.playerDataKey);
 
-  // If player data is null, it means this is a fresh launch
-  // of the game. In such case, we first store the default
-  // player data in the player data box and then return the same.
+
   if (playerData == null) {
     box.put(
       PlayerData.playerDataKey,
       PlayerData.fromMap(PlayerData.defaultData),
     );
   }
-  await Future.delayed(Duration(seconds: 2));
   return box.get(PlayerData.playerDataKey)!;
 }
 
 Future<Settings> getSettings() async {
-  // Open the settings box and read settings from it.
+
   final box = await Hive.openBox<Settings>(Settings.settingsBox);
   final settings = box.get(Settings.settingsKey);
 
-  // If settings is null, it means this is a fresh launch
-  // of the game. In such case, we first store the default
-  // settings in the settings box and then return the same.
+
   if (settings == null) {
     box.put(Settings.settingsKey, Settings(soundEffects: true, backgroundMusic: true));
   }

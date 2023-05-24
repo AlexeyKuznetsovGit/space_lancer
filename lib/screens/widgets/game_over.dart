@@ -2,9 +2,32 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:space_lancer/screens/main_screen.dart';
 import 'package:space_lancer/space_lancer_game.dart';
+
 import 'pause_button.dart';
 
 class GameOverMenu extends StatelessWidget {
+  /*Future<void> showRewardedAd() async {
+    final ad = await RewardedAd.create(
+      adUnitId: 'demo-rewarded-yandex',
+      onAdShown: () {
+        gameRef.restoreHealth();
+        gameRef.overlays.remove(GameOverMenu.id);
+        */ /*gameRef.reset();*/ /*
+        gameRef.resumeEngine();
+      },
+      onAdFailedToLoad: (error) {
+        gameRef.overlays.remove(GameOverMenu.id);
+        gameRef.reset();
+
+        Get.to(() => MainScreen());
+      },
+    );
+    await ad.load(adRequest: AdRequest());
+    await ad.show();
+    final reward = await ad.waitForDismiss();
+    if (reward != null) debugPrint('got ${reward.amount} of ${reward.type}');
+  }*/
+
   static const String id = 'GameOverMenu';
   final SpaceLancerGame gameRef;
 
@@ -35,9 +58,19 @@ class GameOverMenu extends StatelessWidget {
             ),
           ),
 
+          SizedBox(
+            width: MediaQuery.of(context).size.width / 2,
+            child: ElevatedButton(
+              onPressed: () {
+                /*showRewardedAd();*/
+              },
+              child: const Text('Запас прочности +100'),
+            ),
+          ),
+
           // Restart button.
           SizedBox(
-            width: MediaQuery.of(context).size.width / 3,
+            width: MediaQuery.of(context).size.width / 2,
             child: ElevatedButton(
               onPressed: () {
                 gameRef.overlays.remove(GameOverMenu.id);
@@ -45,21 +78,21 @@ class GameOverMenu extends StatelessWidget {
                 gameRef.reset();
                 gameRef.resumeEngine();
               },
-              child: const Text('Restart'),
+              child: const Text('Перезапустить'),
             ),
           ),
 
           // Exit button.
           SizedBox(
-            width: MediaQuery.of(context).size.width / 3,
+            width: MediaQuery.of(context).size.width / 2,
             child: ElevatedButton(
               onPressed: () {
                 gameRef.overlays.remove(GameOverMenu.id);
                 gameRef.reset();
 
-                Get.to(()=> MainScreen());
+                Get.to(() => MainScreen());
               },
-              child: const Text('Exit'),
+              child: const Text('Выход'),
             ),
           ),
         ],
