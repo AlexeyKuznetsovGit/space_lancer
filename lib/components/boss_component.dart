@@ -64,7 +64,7 @@ class BossComponent extends SpriteComponent with HasGameRef<SpaceLancerGame>, Co
     /* BossBullet bullet = BossBullet(position: position - Vector2(size.x / 4, -size.y), angle: 0.0);
     gameRef.add(bullet);*/
     gameRef.addCommand(Command<AudioPlayerComponent>(action: (audioPlayer) {
-      audioPlayer.playSfx('laserSmall_001.ogg');
+      audioPlayer.playSfx('laserSmall_001.mp3');
     }));
     gameRef.addAll(
       _superBulletAngles.map(

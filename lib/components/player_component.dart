@@ -114,7 +114,7 @@ class PlayerComponent extends SpriteAnimationComponent with HasGameRef<SpaceLanc
       gameRef.add(bullet);
     }
     gameRef.addCommand(Command<AudioPlayerComponent>(action: (audioPlayer) {
-      audioPlayer.playSfx('laserSmall_001.ogg');
+      audioPlayer.playSfx('laserSmall_001.mp3');
     }));
   }
 
