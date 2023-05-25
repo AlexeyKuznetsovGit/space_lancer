@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:space_lancer/space_lancer_game.dart';
 import 'package:space_lancer/space_lancer_widget.dart';
@@ -10,7 +12,7 @@ class GameScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: EdgeInsets.only(top: topPadding),
+        padding: Platform.isIOS ? EdgeInsets.only(top: topPadding, bottom: 30) : EdgeInsets.only(top: topPadding),
         child: WillPopScope(
           onWillPop: () async => false,
           child: SpaceLancerWidget()
