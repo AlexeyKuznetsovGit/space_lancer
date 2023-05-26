@@ -4,6 +4,7 @@ import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/experimental.dart';
 import 'package:flame/game.dart';
+import 'package:flame/parallax.dart';
 import 'package:flutter/material.dart';
 import 'package:space_lancer/components/audio_player_component.dart';
 import 'package:space_lancer/components/boss_bullet.dart';
@@ -28,6 +29,7 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
   late final TextComponent componentCounter;
   late final TextComponent scoreText;
   late final TextComponent levelText;
+
   late TextComponent _playerHealth;
   late EnemyCreator _enemyCreator;
   late PowerUpManager _powerUpManager;
@@ -46,6 +48,7 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
   final double deadZoneRadius = 7;
   late TimerProgressBar _progressBar;
 
+
   /*Vector2 fixedResolution = Vector2(540, 960);*/
   final _commandList = List<Command>.empty(growable: true);
   final _addLaterCommandList = List<Command>.empty(growable: true);
@@ -55,6 +58,7 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
 
   @override
   Future<void> onLoad() async {
+
     boundaries = Rect.fromLTWH(10, 0, size.x - 20, size.y);
     _boss = BossComponent();
     await images.loadAll([
@@ -225,6 +229,7 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
     super.render(canvas);
     if (pointerStarPosition != null) {
       canvas.drawCircle(pointerStarPosition!, joystickRadius, Paint()..color = Colors.grey.withAlpha(100));
+      canvas.drawCircle(pointerStarPosition!, deadZoneRadius, Paint()..color = Colors.red.withAlpha(100));
     }
     if (pointerCurrentPosition != null) {
       var delta = pointerCurrentPosition! - pointerStarPosition!;

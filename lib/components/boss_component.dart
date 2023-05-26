@@ -64,7 +64,7 @@ class BossComponent extends SpriteComponent with HasGameRef<SpaceLancerGame>, Co
     /* BossBullet bullet = BossBullet(position: position - Vector2(size.x / 4, -size.y), angle: 0.0);
     gameRef.add(bullet);*/
     gameRef.addCommand(Command<AudioPlayerComponent>(action: (audioPlayer) {
-      audioPlayer.playSfx('laserSmall_001.mp3');
+      audioPlayer.playSfx('laserSmall_001.wav');
     }));
     gameRef.addAll(
       _superBulletAngles.map(
@@ -141,7 +141,7 @@ class BossComponent extends SpriteComponent with HasGameRef<SpaceLancerGame>, Co
   void destroy() {
     // Ask audio player to play enemy destroy effect.
     gameRef.addCommand(Command<AudioPlayerComponent>(action: (audioPlayer) {
-      audioPlayer.playSfx('laser1.ogg');
+      audioPlayer.playSfx('laser1.wav');
     }));
 
     final command = Command<PlayerComponent>(action: (player) {

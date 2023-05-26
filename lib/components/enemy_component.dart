@@ -109,7 +109,7 @@ class EnemyComponent extends SpriteAnimationComponent with HasGameRef<SpaceLance
 
   void destroy() {
     gameRef.addCommand(Command<AudioPlayerComponent>(action: (audioPlayer) {
-      audioPlayer.playSfx('laser1.ogg');
+      audioPlayer.playSfx('laser1.wav');
     }));
 
     final command = Command<PlayerComponent>(action: (player) {

@@ -1,4 +1,4 @@
-package com.example.space_lancer
+package com.kuznetsov.spacelancer
 
 import io.flutter.embedding.android.FlutterActivity
 

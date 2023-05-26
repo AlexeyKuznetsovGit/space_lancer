@@ -69,7 +69,7 @@ abstract class PowerUp extends SpriteComponent
     if (other is PlayerComponent) {
       // Ask audio player to play power up activation effect.
       gameRef.addCommand(Command<AudioPlayerComponent>(action: (audioPlayer) {
-        audioPlayer.playSfx('powerUp6.ogg');
+        audioPlayer.playSfx('powerUp6.wav');
       }));
       onActivated();
       removeFromParent();

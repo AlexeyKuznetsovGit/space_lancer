@@ -15,14 +15,14 @@ import 'package:provider/provider.dart';
 import 'package:space_lancer/models/player_data.dart';
 import 'package:space_lancer/models/settings.dart';
 import 'package:space_lancer/screens/main_screen.dart';
+import 'package:yandex_mobileads/mobile_ads.dart';
+/*import 'package:yandex_mobileads/mobile_ads.dart';*/
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   Flame.device.setPortraitUpOnly();
   Flame.device.fullScreen();
-/*  SystemChrome.setEnabledSystemUIOverlays(<SystemUiOverlay>[SystemUiOverlay.bottom]);*/
-
-  /*MobileAds.initialize();*/
+  MobileAds.initialize();
 
   await initHive();
 

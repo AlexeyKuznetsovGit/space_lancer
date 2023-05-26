@@ -1,7 +1,10 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
+import 'package:flame/parallax.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:space_lancer/components/audio_player_component.dart';
 import 'package:space_lancer/components/boss_bullet.dart';
@@ -14,8 +17,7 @@ import 'package:space_lancer/components/explosion_component.dart';
 import 'package:space_lancer/components/force_field_component.dart';
 import 'package:space_lancer/components/getCurrentLevel.dart';
 import 'package:space_lancer/models/player_data.dart';
-import 'package:space_lancer/screens/widgets/game_over.dart';
-import 'package:space_lancer/screens/widgets/pause_button.dart';
+
 import 'package:space_lancer/space_lancer_game.dart';
 
 class PlayerComponent extends SpriteAnimationComponent with HasGameRef<SpaceLancerGame>, CollisionCallbacks {
@@ -36,6 +38,7 @@ class PlayerComponent extends SpriteAnimationComponent with HasGameRef<SpaceLanc
   late Timer _bulletTimer;
   late PlayerData _playerData;
   late BulletComponent bullet;
+  ParallaxComponent stars = ParallaxComponent();
 
   int get score => _playerData.currentScore;
   int level = 1;
@@ -46,6 +49,7 @@ class PlayerComponent extends SpriteAnimationComponent with HasGameRef<SpaceLanc
     });
     _powerUpShieldTimer = Timer(6, onTick: () {
       _speed = _currentSpeed;
+      stars.removeFromParent();
       forceFieldSprite.removeFromParent();
     });
     _powerUpForceTimer = Timer(6, onTick: () {
@@ -65,20 +69,11 @@ class PlayerComponent extends SpriteAnimationComponent with HasGameRef<SpaceLanc
   void onMount() {
     super.onMount();
     forceFieldSprite = ForceFieldComponent(position: position.clone());
-    /* forceFieldSprite = SpriteComponent.fromImage(
-      gameRef.images.fromCache('force_field.png'),
-      srcSize: Vector2(1024,1024),
-      anchor: Anchor.center,
-      position: position.clone(), // Set your position here
-      size: Vector2(100, 100), // Set your size here (by default it is 0),
-    );*/
     _playerData = Provider.of<PlayerData>(game.buildContext!, listen: false);
   }
 
   @override
   Future<void> onLoad() async {
-/*    gameRef.add(ForceFieldComponent(position: position));*/
-
     add(CircleHitbox());
     animation = SpriteAnimation.fromFrameData(
       gameRef.images.fromCache('player.png'),
@@ -113,8 +108,9 @@ class PlayerComponent extends SpriteAnimationComponent with HasGameRef<SpaceLanc
       bullet = BulletComponent(position: position + Vector2(-8, -size.y / 2), angle: _bulletAngles);
       gameRef.add(bullet);
     }
+
     gameRef.addCommand(Command<AudioPlayerComponent>(action: (audioPlayer) {
-      audioPlayer.playSfx('laserSmall_001.mp3');
+      audioPlayer.playSfx('laserSmall_001.wav');
     }));
   }
 
@@ -209,7 +205,7 @@ class PlayerComponent extends SpriteAnimationComponent with HasGameRef<SpaceLanc
 
   void destroy() {
     gameRef.addCommand(Command<AudioPlayerComponent>(action: (audioPlayer) {
-      audioPlayer.playSfx('laser1.ogg');
+      audioPlayer.playSfx('laser1.wav');
     }));
     gameRef.add(ExplosionComponent(position: position));
     removeFromParent();
@@ -254,14 +250,29 @@ class PlayerComponent extends SpriteAnimationComponent with HasGameRef<SpaceLanc
     _powerUpForceTimer.start();
   }
 
-  void forceField() {
+  void forceField() async {
+
+
     if (forceFieldSprite.isMounted) {
       forceFieldSprite.removeFromParent();
       forceFieldSprite = ForceFieldComponent(position: position.clone());
     }
-    /*gameRef.add(forceFieldSprite);*/
-
     gameRef.add(forceFieldSprite);
+
+    if(stars.isMounted){
+      stars.removeFromParent();
+    }
+
+    stars = await ParallaxComponent.load(
+      [ParallaxImageData('stars1.png'), ParallaxImageData('stars2.png')],
+      repeat: ImageRepeat.repeat,
+      baseVelocity: Vector2(0, -10),
+      velocityMultiplierDelta: Vector2(0, 0.2),
+      size: Vector2(gameRef.size.x, gameRef.size.y),
+    );
+
+    gameRef.add(stars);
+
     _powerUpShieldTimer.stop();
     _powerUpShieldTimer.start();
   }

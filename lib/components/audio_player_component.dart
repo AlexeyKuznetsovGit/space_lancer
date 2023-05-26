@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flame/components.dart';
 import 'package:flame/experimental.dart';
 import 'package:flame_audio/flame_audio.dart';
@@ -11,7 +13,7 @@ class AudioPlayerComponent extends Component with HasGameRef<SpaceLancerGame> {
   Future<void>? onLoad() async {
     FlameAudio.bgm.initialize();
 
-    await FlameAudio.audioCache.loadAll(['laser1.ogg', 'powerUp6.ogg', 'laserSmall_001.mp3']);
+    await FlameAudio.audioCache.loadAll(['laser1.wav', 'powerUp6.wav', 'laserSmall_001.wav']);
 
     /* try {
       await FlameAudio.audioCache.load(
@@ -31,8 +33,7 @@ class AudioPlayerComponent extends Component with HasGameRef<SpaceLancerGame> {
     if (!FlameAudio.audioCache.loadedFiles.containsKey(filename)) return;
 
     if (gameRef.buildContext != null) {
-      if (Provider.of<Settings>(gameRef.buildContext!, listen: false)
-          .backgroundMusic) {
+      if (Provider.of<Settings>(gameRef.buildContext!, listen: false).backgroundMusic) {
         FlameAudio.bgm.play(filename);
       }
     }
@@ -40,8 +41,7 @@ class AudioPlayerComponent extends Component with HasGameRef<SpaceLancerGame> {
 
   void playSfx(String filename) {
     if (gameRef.buildContext != null) {
-      if (Provider.of<Settings>(gameRef.buildContext!, listen: false)
-          .soundEffects) {
+      if (Provider.of<Settings>(gameRef.buildContext!, listen: false).soundEffects) {
         FlameAudio.play(filename);
       }
     }

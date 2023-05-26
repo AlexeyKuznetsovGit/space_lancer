@@ -2,8 +2,74 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 	<dict>
-	    <key>NSMicrophoneUsageDescription</key>
-        <string>MyCoolApp uses the microphone to make you sound like.</string>
+	<key>com.apple.security.network.client</key>
+    		<true/>
+    		<key>NSAppTransportSecurity</key>
+            		<dict>
+            			<!--Include to allow all connections (DANGER)-->
+            			<key>NSAllowsArbitraryLoads</key>
+            			<true/>
+            		</dict>
+	<key>NSMicrophoneUsageDescription</key>
+    <string>Разрешение использования микрофона</string>
+    <key>NSBluetoothAlwaysUsageDescription</key>
+    <string>Разрешение использования Bluetooth</string>
+    <key>NSBluetoothPeripheralUsageDescription</key>
+    <string>Разрешение использования Bluetooth</string>
+	<key>UIBackgroundModes</key>
+     <array>
+        <string>audio</string>
+     </array>
+	<key>GADApplicationIdentifier</key>
+    	<string>ca-app-pub-3940256099942544~1458002511</string>
+	    <key>SKAdNetworkItems</key>
+        <array>
+        <!-- Yandex Ads -->
+        <dict>
+            <key>SKAdNetworkIdentifier</key>
+            <string>zq492l623r.skadnetwork</string>
+        </dict>
+        <dict>
+            <!-- AdMob -->
+            <key>SKAdNetworkIdentifier</key>
+            <string>cstr6suwn9.skadnetwork</string>
+        </dict>
+        <dict>
+            <!-- MyTarget -->
+            <key>SKAdNetworkIdentifier</key>
+            <string>n9x2a789qt.skadnetwork</string>
+        </dict>
+        <dict>
+            <!-- MyTarget -->
+            <key>SKAdNetworkIdentifier</key>
+            <string>r26jy69rpl.skadnetwork</string>
+        </dict>
+        <dict>
+            <!-- Start.io -->
+            <key>SKAdNetworkIdentifier</key>
+            <string>5l3tpt7t6e.skadnetwork</string>
+        </dict>
+        <dict>
+            <!-- UnityAds -->
+            <key>SKAdNetworkIdentifier</key>
+            <string>4dzt52r2t5.skadnetwork</string>
+        </dict>
+        <dict>
+            <!-- IronSource -->
+            <key>SKAdNetworkIdentifier</key>
+            <string>su67r6k2v3.skadnetwork</string>
+        </dict>
+        <dict>
+            <!-- Applovin -->
+            <key>SKAdNetworkIdentifier</key>
+            <string>ludvb6z3bs.skadnetwork</string>
+        </dict>
+        <dict>
+            <!-- Mintegral -->
+            <key>SKAdNetworkIdentifier</key>
+            <string>KBD757YWX3.skadnetwork</string>
+        </dict>
+        </array>
 		<key>CFBundleDevelopmentRegion</key>
 		<string>$(DEVELOPMENT_LANGUAGE)</string>
 		<key>CFBundleDisplayName</key>
