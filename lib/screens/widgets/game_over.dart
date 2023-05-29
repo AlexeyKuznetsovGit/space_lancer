@@ -25,7 +25,7 @@ class _GameOverMenuState extends State<GameOverMenu> {
 
   Future<void> showRewardedAd() async {
     _ad = await RewardedAd.create(
-      adUnitId: "demo-rewarded-yandex" /*Platform.isAndroid ? 'R-M-2405775-1' : "R-M-2405832-1"*/,
+      adUnitId: Platform.isAndroid ? 'R-M-2405775-1' : "R-M-2405832-1",
       onAdLoaded: () {
         print('загружена');
         setState(() => isLoading = true);
