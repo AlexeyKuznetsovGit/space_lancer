@@ -22,10 +22,31 @@ class HealthBar extends PositionComponent {
 
   @override
   void render(Canvas canvas) {
+    canvas.drawRRect(
+        RRect.fromRectAndRadius(
+          Rect.fromCenter(
+            center: Offset(-1, 0.5),
+            width: 200,
+            height: 20,
+          ),
+          Radius.circular(10),
+        ),
+        Paint()
+          ..color = Colors.white
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 2);
     canvas
-      ..drawRect(Rect.fromCenter(center: Offset(-1, 0.5), width: player.health.toDouble()*2, height: 20),
+      ..drawRRect(
+          RRect.fromRectAndRadius(
+            Rect.fromCenter(center: Offset(-1, 0.5), width: player.health.toDouble() * 2, height: 20),
+            Radius.circular(10),
+          ),
           Paint()..color = Colors.white)
-      ..drawRect(Rect.fromCenter(center: Offset(-1, 0.5), width: 200, height: 20),
+      ..drawRRect(
+          RRect.fromRectAndRadius(
+            Rect.fromCenter(center: Offset(-1, 0.5), width: 200, height: 20),
+            Radius.circular(10),
+          ),
           Paint()..color = Colors.blue.withOpacity(0.8));
 
     super.render(canvas);

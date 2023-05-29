@@ -16,68 +16,107 @@ class GameWin extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Padding(
-            padding: EdgeInsets.only(top: 50.0, bottom: 20),
-            child: Text(
-              'You win',
-              style: TextStyle(
-                fontSize: 50.0,
-                color: Colors.white,
-                shadows: [
-                  Shadow(
-                    blurRadius: 20.0,
-                    color: Colors.white,
-                    offset: Offset(0, 0),
-                  )
-                ],
-              ),
-            ),
-          ),
+          SizedBox(height: 50,),
           Text(
-            'Your score: ${gameRef.score}',
-            style: const TextStyle(
+            'Вы победили',
+            style: TextStyle(
               fontSize: 50.0,
               color: Colors.white,
               shadows: [
                 Shadow(
-                  blurRadius: 20.0,
-                  color: Colors.white,
+                  blurRadius: 15.0,
+                  color: Colors.orange,
                   offset: Offset(0, 0),
                 )
               ],
             ),
           ),
-
+          Spacer(),
+          Text(
+            'Ваш счет: ${gameRef.score}',
+            style: const TextStyle(
+              fontSize: 50.0,
+              color: Colors.white,
+              shadows: [
+                Shadow(
+                  blurRadius: 15.0,
+                  color: Colors.orange,
+                  offset: Offset(0, 0),
+                )
+              ],
+            ),
+          ),
+          Spacer(),
           SizedBox(
             height: 30,
           ),
-          // Restart button.
-          SizedBox(
-            width: MediaQuery.of(context).size.width / 3,
-            child: ElevatedButton(
-              onPressed: () {
-                gameRef.overlays.remove(GameWin.id);
-                gameRef.overlays.add(PauseButton.id);
-                gameRef.reset();
-                gameRef.resumeEngine();
-              },
-              child: const Text('Restart'),
-            ),
-          ),
 
-          // Exit button.
-          SizedBox(
-            width: MediaQuery.of(context).size.width / 3,
-            child: ElevatedButton(
-              onPressed: () {
-                gameRef.overlays.remove(GameWin.id);
-                gameRef.reset();
-
-                Get.to(() => MainScreen());
-              },
-              child: const Text('Exit'),
-            ),
+          GestureDetector(
+            onTap: ()  {
+              gameRef.overlays.remove(GameWin.id);
+              gameRef.overlays.add(PauseButton.id);
+              gameRef.reset();
+              gameRef.resumeEngine();
+            },
+            child: Container(
+                padding: EdgeInsets.symmetric(vertical: 5),
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                    color: Colors.black,
+                    border: Border.all(color: Colors.white, width: 2),
+                    borderRadius: BorderRadius.circular(10),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.orange.withOpacity(0.7),
+                        spreadRadius: 5,
+                        blurRadius: 10,
+                        offset: Offset(0, 0),
+                      ),
+                    ]),
+                width: MediaQuery.of(context).size.width / 2,
+                child: const Text(
+                  'Перезапустить',
+                  style: TextStyle(
+                    fontSize: 20.0,
+                    color: Colors.white,
+                  ),
+                )),
           ),
+          SizedBox(
+            height: 30,
+          ),
+          GestureDetector(
+            onTap: ()  {
+              gameRef.overlays.remove(GameWin.id);
+              gameRef.reset();
+
+              Get.offAll(() => MainScreen());
+            },
+            child: Container(
+                padding: EdgeInsets.symmetric(vertical: 5),
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                    color: Colors.black,
+                    border: Border.all(color: Colors.white, width: 2),
+                    borderRadius: BorderRadius.circular(10),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.orange.withOpacity(0.7),
+                        spreadRadius: 5,
+                        blurRadius: 10,
+                        offset: Offset(0, 0),
+                      ),
+                    ]),
+                width: MediaQuery.of(context).size.width / 2,
+                child: const Text(
+                  'Выход',
+                  style: TextStyle(
+                    fontSize: 20.0,
+                    color: Colors.white,
+                  ),
+                )),
+          ),
+          Spacer(),
         ],
       ),
     );

@@ -86,66 +86,140 @@ class _GameOverMenuState extends State<GameOverMenu> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Pause menu title.
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 50.0),
             child: Text(
-              'Game Over',
+              'Игра окончена',
               style: TextStyle(
                 fontSize: 50.0,
                 color: Colors.white,
                 shadows: [
                   Shadow(
-                    blurRadius: 20.0,
-                    color: Colors.white,
+                    blurRadius: 15.0,
+                    color: Colors.orange,
                     offset: Offset(0, 0),
                   )
                 ],
               ),
             ),
           ),
+          Text(
+            'Ваш счет: ${widget.gameRef.score}',
+            style: const TextStyle(
+              fontSize: 50.0,
+              color: Colors.white,
+              shadows: [
+                Shadow(
+                  blurRadius: 15.0,
+                  color: Colors.orange,
+                  offset: Offset(0, 0),
+                )
+              ],
+            ),
+          ),
+          SizedBox(height: 50,),
           if (isLoading) ...[
             CircularProgressIndicator()
           ] else ...[
-            SizedBox(
-              width: MediaQuery.of(context).size.width / 2,
-              child: ElevatedButton(
-                onPressed: () async {
-                  setState(() {
-                    isLoading = true;
-                  });
-                  await showRewardedAd();
-                },
-                child: const Text('Запас прочности +100'),
-              ),
+            GestureDetector(
+              onTap: () async {
+                setState(() {
+                  isLoading = true;
+                });
+                await showRewardedAd();
+              },
+              child: Container(
+                  width: MediaQuery.of(context).size.width / 1.5,
+                  padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                      color: Colors.black,
+                      border: Border.all(color: Colors.white, width: 2),
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.orange.withOpacity(0.7),
+                          spreadRadius: 5,
+                          blurRadius: 10,
+                          offset: Offset(0, 0),
+                        ),
+                      ]),
+                  child: const Text(
+                    'Запас прочности +100',
+                    style: TextStyle(
+                      fontSize: 20.0,
+                      color: Colors.white,
+                    ),
+                  )),
             ),
-
-            // Restart button.
             SizedBox(
-              width: MediaQuery.of(context).size.width / 2,
-              child: ElevatedButton(
-                onPressed: () {
-                  widget.gameRef.overlays.remove(GameOverMenu.id);
-                  widget.gameRef.overlays.add(PauseButton.id);
-                  widget.gameRef.reset();
-                  widget.gameRef.resumeEngine();
-                },
-                child: const Text('Перезапустить'),
-              ),
+              height: 30,
             ),
+            GestureDetector(
+              onTap: () {
+                widget.gameRef.overlays.remove(GameOverMenu.id);
+                widget.gameRef.overlays.add(PauseButton.id);
+                widget.gameRef.reset();
+                widget.gameRef.resumeEngine();
+              },
+              child: Container(
+                  width: MediaQuery.of(context).size.width / 1.5,
+                  padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                      color: Colors.black,
+                      border: Border.all(color: Colors.white, width: 2),
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.orange.withOpacity(0.7),
+                          spreadRadius: 5,
+                          blurRadius: 10,
+                          offset: Offset(0, 0),
+                        ),
+                      ]),
 
-            // Exit button.
+                  child: const Text(
+                    'Перезапустить',
+                    style: TextStyle(
+                      fontSize: 20.0,
+                      color: Colors.white,
+                    ),
+                  )),
+            ),
             SizedBox(
-              width: MediaQuery.of(context).size.width / 2,
-              child: ElevatedButton(
-                onPressed: () {
-                  widget.gameRef.overlays.remove(GameOverMenu.id);
-                  widget.gameRef.reset();
+              height: 30,
+            ),
+            GestureDetector(
+              onTap: () {
+                widget.gameRef.overlays.remove(GameOverMenu.id);
+                widget.gameRef.reset();
 
-                  Get.to(() => MainScreen());
-                },
-                child: const Text('Выход'),
-              ),
+                Get.offAll(() => MainScreen());
+              },
+              child: Container(
+                width: MediaQuery.of(context).size.width / 1.5,
+                  padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                      color: Colors.black,
+                      border: Border.all(color: Colors.white, width: 2),
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.orange.withOpacity(0.7),
+                          spreadRadius: 5,
+                          blurRadius: 10,
+                          offset: Offset(0, 0),
+                        ),
+                      ]),
+                  child: const Text(
+                    'Выход',
+                    style: TextStyle(
+                      fontSize: 20.0,
+                      color: Colors.white,
+                    ),
+                  )),
             ),
           ]
         ],

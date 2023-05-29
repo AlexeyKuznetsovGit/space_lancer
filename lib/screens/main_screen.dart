@@ -28,13 +28,8 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    highScore = Provider
-        .of<PlayerData>(context)
-        .highScore;
-    topPadding = MediaQuery
-        .of(context)
-        .size
-        .height * 0.05;
+    highScore = Provider.of<PlayerData>(context).highScore;
+    topPadding = MediaQuery.of(context).size.height * 0.05;
     return Scaffold(
       body: Padding(
         padding: EdgeInsets.only(top: topPadding),
@@ -43,103 +38,94 @@ class _MainScreenState extends State<MainScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
+                'Space Lancer',
+                style: TextStyle(
+                  fontSize: 50.0,
+                  color: Colors.white,
+                  shadows: [
+                    Shadow(
+                      blurRadius: 5.0,
+                      color: Colors.orange,
+                      offset: Offset(0, 0),
+                    )
+                  ],
+                ),
+              ),
+              SizedBox(height: 30,),
+              Text(
                 'Лучший результат: $highScore',
                 style: TextStyle(
                   fontSize: 30.0,
                   color: Colors.white,
                   shadows: [
                     Shadow(
-                      blurRadius: 20.0,
-                      color: Colors.grey,
+                      blurRadius: 5.0,
+                      color: Colors.orange,
                       offset: Offset(0, 0),
                     )
                   ],
                 ),
               ),
-              Container(
-                color: Colors.red,
-                child: Column(children: [Image.asset(
-                  'assets/images/giphy.gif',
-                  height: 300,
-                  width: 300,
-                ), Text('Играть', style: TextStyle(
-                  fontSize: 30.0,
-                  color: Colors.white,
-                  shadows: [
-                    Shadow(
-                      blurRadius: 20.0,
-                      color: Colors.grey,
-                      offset: Offset(0, 0),
+              Spacer(),
+              GestureDetector(
+                onTap: highScore < 0
+                    ? () {}
+                    : () {
+                        Get.to(() => GameScreen(
+                              topPadding: topPadding,
+                            ));
+                      },
+                child: Stack(
+                  alignment: AlignmentDirectional.center,
+                  children: [
+                    Image.asset(
+                      'assets/images/giphy.gif',
+                      height: 422,
+                      width: 423,
+                      fit: BoxFit.cover,
+                    ),
+                    Text(
+                      'Играть',
+                      style: TextStyle(
+                        fontSize: 25.0,
+                        color: Colors.white,
+                        shadows: [
+                          Shadow(
+                            blurRadius: 5.0,
+                            color: Colors.orange,
+                            offset: Offset(0, 0),
+                          )
+                        ],
+                      ),
                     )
                   ],
-                ),)
-                ],),
+                ),
               ),
+              Spacer(),
+              GestureDetector(
+                onTap: () {
+                  Get.to(() => SettingsMenu());
+                },
+                child: Container(
 
-
-              /*  Consumer<PlayerData>(builder: (context, playerData, child) {
-                return highScore < 0
-                    ? Text(
-                        'Лучший результат: $highScore',
-                        style: TextStyle(
-                          fontSize: 30.0,
-                          color: Colors.white,
-                          shadows: [
-                            Shadow(
-                              blurRadius: 20.0,
-                              color: Colors.grey,
-                              offset: Offset(0, 0),
-                            )
-                          ],
-                        ),
-                      )
-                    : Container();
-              }),*/
-              const Padding(
-                padding: EdgeInsets.only(bottom: 50.0),
-                child: Text(
-                  'Space Lancer',
-                  style: TextStyle(
-                    fontSize: 50.0,
-                    color: Colors.white,
-                    shadows: [
-                      Shadow(
-                        blurRadius: 20.0,
-                        color: Colors.grey,
+                  padding: EdgeInsets.symmetric(vertical: 5),
+                  alignment: Alignment.center,
+                    decoration: BoxDecoration(color: Colors.black,border: Border.all(color: Colors.white, width: 2), borderRadius: BorderRadius.circular(10), boxShadow: [
+                      BoxShadow(
+                        color: Colors.orange.withOpacity(0.7),
+                        spreadRadius: 5,
+                        blurRadius: 10,
                         offset: Offset(0, 0),
-                      )
-                    ],
-                  ),
-                ),
-              ),
-              SizedBox(
-                width: MediaQuery
-                    .of(context)
-                    .size
-                    .width / 3,
-                child: ElevatedButton(
-                  onPressed: highScore < 0
-                      ? () {}
-                      : () {
-                    Get.to(() =>
-                        GameScreen(
-                          topPadding: topPadding,
-                        ));
-                  },
-                  child: const Text('Играть'),
-                ),
-              ),
-              SizedBox(
-                width: MediaQuery
-                    .of(context)
-                    .size
-                    .width / 3,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Get.to(() => SettingsMenu());
-                  },
-                  child: const Text('Настройки'),
-                ),
+                      ),
+                    ]),
+                    width: MediaQuery.of(context).size.width / 3,
+                    child: const Text(
+                      'Настройки',
+                      style: TextStyle(
+                        fontSize: 20.0,
+                        color: Colors.white,
+                      ),
+                    )),
               ),
               Spacer(),
             ],

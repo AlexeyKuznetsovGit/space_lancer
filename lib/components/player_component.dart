@@ -27,6 +27,7 @@ class PlayerComponent extends SpriteAnimationComponent with HasGameRef<SpaceLanc
   int _health = 100;
   late ForceFieldComponent forceFieldSprite;
   double _currentSpeed = 250;
+  int _currentDamage = 10;
 
   set changeHealth(int v) => _health = v;
 
@@ -53,7 +54,7 @@ class PlayerComponent extends SpriteAnimationComponent with HasGameRef<SpaceLanc
       forceFieldSprite.removeFromParent();
     });
     _powerUpForceTimer = Timer(6, onTick: () {
-      bullet.changeDamage = 10;
+      bullet.changeDamage = _currentDamage;
       bullet.changeSpeed = 350;
     });
     _bulletTimer = Timer(2, onTick: _createBullet, repeat: true);
@@ -138,39 +139,69 @@ class PlayerComponent extends SpriteAnimationComponent with HasGameRef<SpaceLanc
     );
 
     level = GameUtils.getCurrentLevel(score);
-    if (forceFieldSprite.isMounted) {
-      _speed = 500;
-    } else {
-      switch (level) {
-        case 1:
-          {
-            _timeShot = 2;
+    switch (level) {
+      case 1:
+        {
+          _timeShot = 2;
+          if (forceFieldSprite.isMounted) {
+            _speed = 500;
+          } else {
             _currentSpeed = 250;
             _speed = _currentSpeed;
-            break;
           }
-        case 2:
-          {
-            _timeShot = 1.5;
+
+          break;
+        }
+      case 2:
+        {
+          _timeShot = 1.5;
+          if (forceFieldSprite.isMounted) {
+            _speed = 500;
+          } else {
             _currentSpeed = 300;
             _speed = _currentSpeed;
-            break;
           }
-        case 3:
-          {
-            _timeShot = 1;
+
+          break;
+        }
+      case 3:
+        {
+          _timeShot = 1;
+          if (forceFieldSprite.isMounted) {
+            _speed = 500;
+          } else {
             _currentSpeed = 350;
             _speed = _currentSpeed;
-            break;
           }
-        case 4:
-          {
-            _timeShot = 0.5;
+
+          break;
+        }
+      case 4:
+        {
+          _timeShot = 0.5;
+          if (forceFieldSprite.isMounted) {
+            _speed = 500;
+          } else {
             _currentSpeed = 400;
             _speed = _currentSpeed;
-            break;
           }
-      }
+
+          break;
+        }
+      case 5:
+        {
+          _currentDamage = 20;
+          bullet.changeDamage = _currentDamage;
+          _timeShot = 0.5;
+          if (forceFieldSprite.isMounted) {
+            _speed = 500;
+          } else {
+            _currentSpeed = 450;
+            _speed = _currentSpeed;
+          }
+
+          break;
+        }
     }
 
     _bulletTimer.limit = _timeShot;
@@ -244,30 +275,34 @@ class PlayerComponent extends SpriteAnimationComponent with HasGameRef<SpaceLanc
   }
 
   void powerBullet() {
-    bullet.changeDamage = 20;
-    bullet.changeSpeed = 500;
+    bullet.changeDamage = _currentDamage * 2;
+    bullet.changeSpeed = 550;
     _powerUpForceTimer.stop();
     _powerUpForceTimer.start();
   }
 
   void forceField() async {
-
-
     if (forceFieldSprite.isMounted) {
       forceFieldSprite.removeFromParent();
       forceFieldSprite = ForceFieldComponent(position: position.clone());
     }
     gameRef.add(forceFieldSprite);
 
-    if(stars.isMounted){
+    if (stars.isMounted) {
       stars.removeFromParent();
     }
 
-    stars = await ParallaxComponent.load(
+    stars = Platform.isIOS ? await ParallaxComponent.load(
       [ParallaxImageData('stars1.png'), ParallaxImageData('stars2.png')],
       repeat: ImageRepeat.repeat,
       baseVelocity: Vector2(0, -10),
       velocityMultiplierDelta: Vector2(0, 0.2),
+      size: Vector2(gameRef.size.x, gameRef.size.y),
+    ) : await ParallaxComponent.load(
+      [ParallaxImageData('stars1.png'), ParallaxImageData('stars2.png')],
+      repeat: ImageRepeat.repeat,
+      baseVelocity: Vector2(0, -50),
+      velocityMultiplierDelta: Vector2(0, 2.5),
       size: Vector2(gameRef.size.x, gameRef.size.y),
     );
 

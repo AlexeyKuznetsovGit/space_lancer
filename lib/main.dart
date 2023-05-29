@@ -1,11 +1,3 @@
-/*
-import 'package:flutter/widgets.dart';
-import 'package:space_lancer/space_lancer_widget.dart';
-
-void main() async {
-  runApp(const SpaceLancerWidget());
-}
-*/
 import 'package:flame/flame.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -16,7 +8,6 @@ import 'package:space_lancer/models/player_data.dart';
 import 'package:space_lancer/models/settings.dart';
 import 'package:space_lancer/screens/main_screen.dart';
 import 'package:yandex_mobileads/mobile_ads.dart';
-/*import 'package:yandex_mobileads/mobile_ads.dart';*/
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -38,7 +29,6 @@ void main() async {
       ),
     ],
     builder: (context, child) {
-
       return MultiProvider(
         providers: [
           ChangeNotifierProvider<Settings>.value(
@@ -78,6 +68,7 @@ Future<PlayerData> getPlayerData() async {
       PlayerData.fromMap(PlayerData.defaultData),
     );
   }
+   Future.delayed(Duration(seconds: 2));
   return box.get(PlayerData.playerDataKey)!;
 }
 

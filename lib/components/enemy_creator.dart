@@ -59,7 +59,7 @@ class EnemyCreator extends Component with HasGameRef<SpaceLancerGame> {
         }
       case 3:
         {
-          countEnemy = 5;
+          countEnemy = 4;
           break;
         }
       case 4:
@@ -67,6 +67,9 @@ class EnemyCreator extends Component with HasGameRef<SpaceLancerGame> {
           countEnemy = 5;
           break;
         }
+      case 5:
+        countEnemy = 6;
+        break;
     }
     List<Vector2> positions = createPosition(countEnemy);
     print(positions.toString());
@@ -81,7 +84,8 @@ class EnemyCreator extends Component with HasGameRef<SpaceLancerGame> {
           Vector2.zero() + EnemyComponent.initialSize / 2,
           gameRef.size - EnemyComponent.initialSize / 2,
         );*/
-        final enemyData = _enemyDataList.elementAt(currentLevel <= 2 ? 0 : 1);
+
+        final enemyData = _enemyDataList.elementAt(currentLevel - 1);
         return EnemyComponent(size: EnemyComponent.initialSize, position: positions[index], enemyData: enemyData);
       }),
     );
@@ -134,8 +138,26 @@ class EnemyCreator extends Component with HasGameRef<SpaceLancerGame> {
     ),
     EnemyData(
       killPoint: 1,
+      speed: 200,
+      level: 1,
+      hMove: false,
+    ),
+    EnemyData(
+      killPoint: 1,
       speed: 250,
+      level: 1,
+      hMove: true,
+    ),
+    EnemyData(
+      killPoint: 2,
+      speed: 300,
       level: 2,
+      hMove: true,
+    ),
+    EnemyData(
+      killPoint: 3,
+      speed: 350,
+      level: 3,
       hMove: true,
     ),
   ];

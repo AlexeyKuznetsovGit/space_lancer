@@ -22,24 +22,30 @@ class TimerProgressBar extends Component {
       ..color = Colors.white
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2;
-    final borderRect = Rect.fromLTWH(
-      progressBarX,
-      progressBarY,
-      progressBarWidth,
-      progressBarHeight,
+    final borderRect = RRect.fromRectAndRadius(
+      Rect.fromLTWH(
+        progressBarX,
+        progressBarY,
+        progressBarWidth,
+        progressBarHeight,
+      ),
+      Radius.circular(10),
     );
-    canvas.drawRect(borderRect, borderPaint);
+    canvas.drawRRect(borderRect, borderPaint);
 
-    final progressBarRect = Rect.fromLTWH(
-      progressBarX,
-      progressBarY,
-      progressBarWidth * progress,
-      progressBarHeight,
+    final progressBarRect = RRect.fromRectAndCorners(
+      Rect.fromLTWH(progressBarX,
+        progressBarY,
+        progressBarWidth * progress,
+        progressBarHeight,) ,   topLeft: Radius.circular(100),
+        topRight: Radius.circular(100),
+        bottomLeft: Radius.circular(100),
+        bottomRight: Radius.circular(100),
     );
     final progressBarPaint = Paint()
       ..color = Colors.green
       ..style = PaintingStyle.fill;
-    canvas.drawRect(progressBarRect, progressBarPaint);
+    canvas.drawRRect(progressBarRect, progressBarPaint);
 
     final progressPercentage = (progress * 100).toStringAsFixed(0) + '%';
     final progressTextSpan = TextSpan(

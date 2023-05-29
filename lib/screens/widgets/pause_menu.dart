@@ -20,14 +20,14 @@ class PauseMenu extends StatelessWidget {
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 50.0),
             child: Text(
-              'Paused',
+              'Пауза',
               style: TextStyle(
                 fontSize: 50.0,
                 color: Colors.white,
                 shadows: [
                   Shadow(
-                    blurRadius: 20.0,
-                    color: Colors.grey,
+                    blurRadius: 5.0,
+                    color: Colors.orange,
                     offset: Offset(0, 0),
                   )
                 ],
@@ -35,46 +35,103 @@ class PauseMenu extends StatelessWidget {
             ),
           ),
 
-          // Resume button.
-          SizedBox(
-            width: MediaQuery.of(context).size.width / 3,
-            child: ElevatedButton(
-              onPressed: () {
-                gameRef.resumeEngine();
-                gameRef.overlays.remove(PauseMenu.id);
-                gameRef.overlays.add(PauseButton.id);
-              },
-              child: const Text('Resume'),
-            ),
+          GestureDetector(
+            onTap: () {
+              gameRef.resumeEngine();
+              gameRef.overlays.remove(PauseMenu.id);
+              gameRef.overlays.add(PauseButton.id);
+            },
+            child: Container(
+                padding: EdgeInsets.symmetric(vertical: 5),
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                    color: Colors.black,
+                    border: Border.all(color: Colors.white, width: 2),
+                    borderRadius: BorderRadius.circular(10),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.orange.withOpacity(0.7),
+                        spreadRadius: 5,
+                        blurRadius: 10,
+                        offset: Offset(0, 0),
+                      ),
+                    ]),
+                width: MediaQuery.of(context).size.width / 2.5,
+                child: const Text(
+                  'Продолжить',
+                  style: TextStyle(
+                    fontSize: 20.0,
+                    color: Colors.white,
+                  ),
+                )),
           ),
 
-          // Restart button.
-          SizedBox(
-            width: MediaQuery.of(context).size.width / 3,
-            child: ElevatedButton(
-              onPressed: () {
-                gameRef.overlays.remove(PauseMenu.id);
-                gameRef.overlays.add(PauseButton.id);
-                gameRef.reset();
-                gameRef.resumeEngine();
-              },
-              child: const Text('Restart'),
-            ),
+          SizedBox(height: 30,),
+
+          GestureDetector(
+            onTap: () {
+              gameRef.overlays.remove(PauseMenu.id);
+              gameRef.overlays.add(PauseButton.id);
+              gameRef.reset();
+              gameRef.resumeEngine();
+            },
+            child: Container(
+                padding: EdgeInsets.symmetric(vertical: 5),
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                    color: Colors.black,
+                    border: Border.all(color: Colors.white, width: 2),
+                    borderRadius: BorderRadius.circular(10),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.orange.withOpacity(0.7),
+                        spreadRadius: 5,
+                        blurRadius: 10,
+                        offset: Offset(0, 0),
+                      ),
+                    ]),
+                width: MediaQuery.of(context).size.width / 2.5,
+                child: const Text(
+                  'Перезапустить',
+                  style: TextStyle(
+                    fontSize: 20.0,
+                    color: Colors.white,
+                  ),
+                )),
+          ),
+          SizedBox(height: 30,),
+          GestureDetector(
+            onTap: () {
+              gameRef.overlays.remove(PauseMenu.id);
+              gameRef.reset();
+
+              Get.offAll(() => MainScreen());
+            },
+            child: Container(
+                padding: EdgeInsets.symmetric(vertical: 5),
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                    color: Colors.black,
+                    border: Border.all(color: Colors.white, width: 2),
+                    borderRadius: BorderRadius.circular(10),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.orange.withOpacity(0.7),
+                        spreadRadius: 5,
+                        blurRadius: 10,
+                        offset: Offset(0, 0),
+                      ),
+                    ]),
+                width: MediaQuery.of(context).size.width / 2.5,
+                child: const Text(
+                  'Выход',
+                  style: TextStyle(
+                    fontSize: 20.0,
+                    color: Colors.white,
+                  ),
+                )),
           ),
 
-          // Exit button.
-          SizedBox(
-            width: MediaQuery.of(context).size.width / 3,
-            child: ElevatedButton(
-              onPressed: () {
-                gameRef.overlays.remove(PauseMenu.id);
-                gameRef.reset();
-                /*gameRef.resumeEngine();*/
-                Get.to(() => MainScreen());
-              },
-              child: const Text('Exit'),
-            ),
-          ),
         ],
       ),
     );

@@ -37,7 +37,9 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
   late BossComponent _boss;
   late ForceFieldComponent forceField;
   Rect boundaries = Rect.zero;
-  Timer timerWinGame = Timer(2);
+  late Timer timerWinGame;
+  late Timer timerLoseGame;
+
   double timer = 0;
   double timeLimit = 120;
 
@@ -48,7 +50,6 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
   final double deadZoneRadius = 7;
   late TimerProgressBar _progressBar;
 
-
   /*Vector2 fixedResolution = Vector2(540, 960);*/
   final _commandList = List<Command>.empty(growable: true);
   final _addLaterCommandList = List<Command>.empty(growable: true);
@@ -56,9 +57,21 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
   int score = 0;
   bool bossSpawn = false;
 
+  SpaceLancerGame() : super() {
+    timerWinGame = Timer(2, onTick: () {
+      pauseEngine();
+      overlays.remove(PauseButton.id);
+      overlays.add(GameWin.id);
+    }, autoStart: false);
+    timerLoseGame = Timer(2, onTick: () {
+      pauseEngine();
+      overlays.remove(PauseButton.id);
+      overlays.add(GameOverMenu.id);
+    }, autoStart: false);
+  }
+
   @override
   Future<void> onLoad() async {
-
     boundaries = Rect.fromLTWH(10, 0, size.x - 20, size.y);
     _boss = BossComponent();
     await images.loadAll([
@@ -79,7 +92,7 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
     add(
       scoreText = TextComponent(
         text: 'Опыт: 0',
-        position: Vector2(size.x -10, 10),
+        position: Vector2(size.x - 10, 10),
         anchor: Anchor.topRight,
         priority: 1,
       ),
@@ -102,7 +115,7 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
     add(player = PlayerComponent());
     _playerHealth = TextComponent(
       text: 'Прочность: 100%',
-      position: Vector2(size.x / 2, size.y),
+      position: Vector2(size.x / 2, size.y -5),
       textRenderer: TextPaint(
         style: const TextStyle(
           color: Colors.white,
@@ -110,6 +123,7 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
           fontFamily: 'BungeeInline',
         ),
       ),
+      priority: 1
     );
 
     _playerHealth.anchor = Anchor.bottomCenter;
@@ -123,9 +137,9 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
     add(
       HealthBar(
         player: player,
-        position: Vector2(size.x / 2, size.y - 10),
+        position: Vector2(size.x / 2, size.y - 15),
         anchor: Anchor.bottomCenter,
-        priority: -1,
+        priority: 0,
       ),
     );
   }
@@ -133,6 +147,8 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
   @override
   void update(double dt) {
     super.update(dt);
+    timerLoseGame.update(dt);
+    timerWinGame.update(dt);
     timer += dt;
     _progressBar.timer = timer;
     _enemyCreator.timer = timer;
@@ -151,29 +167,24 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
     _commandList.addAll(_addLaterCommandList);
     _addLaterCommandList.clear();
 
-    if (player.isMounted || player.isRemoved) {
+    if (player.isMounted) {
       score = player.score;
       levelText.text = 'Уровень: ${player.level}';
 
       scoreText.text = 'Опыт: ${player.score}';
       _playerHealth.text = 'Прочность: ${player.health}%';
+      if (player.health <= 0) {
+        timerLoseGame.start();
+      }
+    }
 
-      if (player.health <= 0 && (!camera.shaking)) {
-        pauseEngine();
-        overlays.remove(PauseButton.id);
-        overlays.add(GameOverMenu.id);
-      }
-    }
     if (_boss.isMounted) {
-      if (_boss.hitPoints <= 0 && (!camera.shaking)) {
+      if (_boss.hitPoints <= 0) {
         player.stopFire();
-        timerWinGame = Timer(2, onTick: () {
-          pauseEngine();
-          overlays.remove(PauseButton.id);
-          overlays.add(GameWin.id);
-        });
+        timerWinGame.start();
       }
     }
+    timerLoseGame.update(dt);
     timerWinGame.update(dt);
   }
 
