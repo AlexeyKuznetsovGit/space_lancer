@@ -47,7 +47,7 @@ class _GameOverMenuState extends State<GameOverMenu> {
         widget.gameRef.overlays.remove(GameOverMenu.id);
         widget.gameRef.reset();
 
-        Get.to(() => MainScreen());
+        Get.offAll(() => MainScreen());
       },
     );
 
@@ -70,13 +70,13 @@ class _GameOverMenuState extends State<GameOverMenu> {
         widget.gameRef.overlays.remove(GameOverMenu.id);
         widget.gameRef.reset();
 
-        Get.to(() => MainScreen());
+        Get.offAll(() => MainScreen());
       }
     } else {
       widget.gameRef.overlays.remove(GameOverMenu.id);
       widget.gameRef.reset();
 
-      Get.to(() => MainScreen());
+      Get.offAll(() => MainScreen());
     }
   }
 
