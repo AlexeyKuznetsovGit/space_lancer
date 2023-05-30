@@ -30,6 +30,7 @@ class _SpaceLancerWidgetState extends State<SpaceLancerWidget> with WidgetsBindi
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.paused) {
+      gameApp.audioPlayerComponent.pauseBgm();
       gameApp.pauseEngine();
       gameApp.overlays.add(PauseMenu.id);
       gameApp.overlays.remove(PauseButton.id);

@@ -11,20 +11,11 @@ import 'command.dart';
 import 'power_up_manager.dart';
 import 'audio_player_component.dart';
 
-// An abstract class which represents power ups in this game.
-/// See [Freeze], [Health], [MultiFire] and for example.
-abstract class PowerUp extends SpriteComponent
-    with HasGameRef<SpaceLancerGame>, CollisionCallbacks {
-  // Controls how long the power up should be visible
-  // before getting destroyed if not picked.
+abstract class PowerUp extends SpriteComponent with HasGameRef<SpaceLancerGame>, CollisionCallbacks {
   late Timer _timer;
 
-  // Abstract method which child classes should override
-  /// and return a [Sprite] for the power up.
   Sprite getSprite();
 
-  // Abstract method which child classes should override
-  // and perform any activation event necessary.
   void onActivated();
 
   PowerUp({
@@ -32,8 +23,6 @@ abstract class PowerUp extends SpriteComponent
     Vector2? size,
     Sprite? sprite,
   }) : super(position: position, size: size, sprite: sprite) {
-    // Power ups will be displayed only for 3 seconds
-    // before getting destroyed.
     _timer = Timer(3, onTick: removeFromParent);
   }
 
@@ -45,7 +34,6 @@ abstract class PowerUp extends SpriteComponent
 
   @override
   void onMount() {
-    // Add a circular hit box for this power up.
     final shape = CircleHitbox.relative(
       0.5,
       parentSize: size,
@@ -54,22 +42,17 @@ abstract class PowerUp extends SpriteComponent
     );
     add(shape);
 
-    // Set the correct sprite by calling overriden getSprite method.
     sprite = getSprite();
 
-    // Start the timer.
     _timer.start();
     super.onMount();
   }
 
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
-    // If the other entity is Player, call the overriden
-    // onActivated method and mark this component to be removed.
     if (other is PlayerComponent) {
-      // Ask audio player to play power up activation effect.
       gameRef.addCommand(Command<AudioPlayerComponent>(action: (audioPlayer) {
-        audioPlayer.playSfx('powerUp6.wav');
+        audioPlayer.playSfx('selection.wav');
       }));
       onActivated();
       removeFromParent();
@@ -79,11 +62,8 @@ abstract class PowerUp extends SpriteComponent
   }
 }
 
-
-// This power up increases player health by 10.
 class Health extends PowerUp {
-  Health({Vector2? position, Vector2? size})
-      : super(position: position, size: size);
+  Health({Vector2? position, Vector2? size}) : super(position: position, size: size);
 
   @override
   Sprite getSprite() {
@@ -92,7 +72,6 @@ class Health extends PowerUp {
 
   @override
   void onActivated() {
-    // Register a command to increase player health.
     final command = Command<PlayerComponent>(action: (player) {
       player.increaseHealthBy(10);
     });
@@ -101,8 +80,7 @@ class Health extends PowerUp {
 }
 
 class PowerBullet extends PowerUp {
-  PowerBullet({Vector2? position, Vector2? size})
-      : super(position: position, size: size);
+  PowerBullet({Vector2? position, Vector2? size}) : super(position: position, size: size);
 
   @override
   Sprite getSprite() {
@@ -111,7 +89,6 @@ class PowerBullet extends PowerUp {
 
   @override
   void onActivated() {
-    // Register a command to increase player health.
     final command = Command<PlayerComponent>(action: (player) {
       player.powerBullet();
     });
@@ -120,8 +97,7 @@ class PowerBullet extends PowerUp {
 }
 
 class ForceField extends PowerUp {
-  ForceField({Vector2? position, Vector2? size})
-      : super(position: position, size: size);
+  ForceField({Vector2? position, Vector2? size}) : super(position: position, size: size);
 
   @override
   Sprite getSprite() {
@@ -130,7 +106,6 @@ class ForceField extends PowerUp {
 
   @override
   void onActivated() {
-    // Register a command to increase player health.
     final command = Command<PlayerComponent>(action: (player) {
       player.forceField();
     });
@@ -138,11 +113,8 @@ class ForceField extends PowerUp {
   }
 }
 
-
-// This power up freezes all enemies for some time.
 class Freeze extends PowerUp {
-  Freeze({Vector2? position, Vector2? size})
-      : super(position: position, size: size);
+  Freeze({Vector2? position, Vector2? size}) : super(position: position, size: size);
 
   @override
   Sprite getSprite() {
@@ -151,19 +123,16 @@ class Freeze extends PowerUp {
 
   @override
   void onActivated() {
-    // Register a command to freeze all enemies.
     final command1 = Command<EnemyComponent>(action: (enemy) {
       enemy.freeze();
     });
     gameRef.addCommand(command1);
 
-    /// Register a command to freeze [EnemyManager].
     final command2 = Command<EnemyCreator>(action: (enemyManager) {
       enemyManager.freeze();
     });
     gameRef.addCommand(command2);
 
-    /// Register a command to freeze [PowerUpManager].
     final command3 = Command<PowerUpManager>(action: (powerUpManager) {
       powerUpManager.freeze();
     });
@@ -176,10 +145,8 @@ class Freeze extends PowerUp {
   }
 }
 
-// This power up activate multi-fire for some time.
 class MultiFire extends PowerUp {
-  MultiFire({Vector2? position, Vector2? size})
-      : super(position: position, size: size);
+  MultiFire({Vector2? position, Vector2? size}) : super(position: position, size: size);
 
   @override
   Sprite getSprite() {
@@ -188,7 +155,6 @@ class MultiFire extends PowerUp {
 
   @override
   void onActivated() {
-    // Register a command to allow multiple bullets.
     final command = Command<PlayerComponent>(action: (player) {
       player.shootMultipleBullets();
     });

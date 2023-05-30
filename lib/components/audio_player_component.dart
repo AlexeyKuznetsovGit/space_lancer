@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flame/components.dart';
@@ -13,30 +14,26 @@ class AudioPlayerComponent extends Component with HasGameRef<SpaceLancerGame> {
   Future<void>? onLoad() async {
     FlameAudio.bgm.initialize();
 
-    await FlameAudio.audioCache.loadAll(['laser1.wav', 'powerUp6.wav', 'laserSmall_001.wav']);
+    await FlameAudio.audioCache.loadAll(['explosion.wav', 'selection.wav', 'laserSmall_001.wav', 'shot.wav']);
 
-    /* try {
+    try {
       await FlameAudio.audioCache.load(
-        '9. Space Invaders.wav',
+        'background.mp3',
       );
-    } catch (_) {
-      // ignore: avoid_print
-      print('Missing VOiD1 Gaming music pack: '
-          'https://void1gaming.itch.io/free-synthwave-music-pack '
-          'See assets/audio/README.md for more information.');
-    }*/
+    } catch (e) {
+      print(e.toString());
+    }
 
     return super.onLoad();
   }
 
   void playBgm(String filename) {
-    if (!FlameAudio.audioCache.loadedFiles.containsKey(filename)) return;
-
-    if (gameRef.buildContext != null) {
+/*log(FlameAudio.audioCache.loadedFiles.toString(),name: "BACKGROUND");*/
+    /*if (!FlameAudio.audioCache.loadedFiles.containsKey(filename)) return;*/
       if (Provider.of<Settings>(gameRef.buildContext!, listen: false).backgroundMusic) {
         FlameAudio.bgm.play(filename);
       }
-    }
+
   }
 
   void playSfx(String filename) {
@@ -50,4 +47,15 @@ class AudioPlayerComponent extends Component with HasGameRef<SpaceLancerGame> {
   void stopBgm() {
     FlameAudio.bgm.stop();
   }
+
+  void pauseBgm() {
+    FlameAudio.bgm.pause();
+  }
+  void resumeBgm() {
+    if (Provider.of<Settings>(gameRef.buildContext!, listen: false).backgroundMusic) {
+      FlameAudio.bgm.resume();
+    }
+
+  }
+
 }

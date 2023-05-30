@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:space_lancer/components/audio_player_component.dart';
+import 'package:space_lancer/components/command.dart';
 import 'package:space_lancer/screens/widgets/pause_menu.dart';
 import 'package:space_lancer/space_lancer_game.dart';
 
@@ -18,6 +20,7 @@ class PauseButton extends StatelessWidget {
           color: Colors.white,
         ),
         onPressed: () {
+          gameRef.audioPlayerComponent.pauseBgm();
           gameRef.pauseEngine();
           gameRef.overlays.add(PauseMenu.id);
           gameRef.overlays.remove(PauseButton.id);

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:space_lancer/components/audio_player_component.dart';
+import 'package:space_lancer/components/command.dart';
 import 'package:space_lancer/screens/main_screen.dart';
 import 'package:space_lancer/space_lancer_game.dart';
 import 'pause_button.dart';
@@ -37,6 +39,7 @@ class PauseMenu extends StatelessWidget {
 
           GestureDetector(
             onTap: () {
+              gameRef.audioPlayerComponent.resumeBgm();
               gameRef.resumeEngine();
               gameRef.overlays.remove(PauseMenu.id);
               gameRef.overlays.add(PauseButton.id);

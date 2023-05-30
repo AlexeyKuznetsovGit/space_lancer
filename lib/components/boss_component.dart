@@ -141,7 +141,7 @@ class BossComponent extends SpriteComponent with HasGameRef<SpaceLancerGame>, Co
   void destroy() {
     // Ask audio player to play enemy destroy effect.
     gameRef.addCommand(Command<AudioPlayerComponent>(action: (audioPlayer) {
-      audioPlayer.playSfx('laser1.wav');
+      audioPlayer.playSfx('explosion.wav');
     }));
 
     final command = Command<PlayerComponent>(action: (player) {

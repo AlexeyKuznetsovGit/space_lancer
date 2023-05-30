@@ -33,6 +33,7 @@ class PlayerComponent extends SpriteAnimationComponent with HasGameRef<SpaceLanc
 
   int get health => _health;
   bool _shootMultipleBullets = false;
+  bool _powerShot = false;
   late Timer _powerUpShieldTimer;
   late Timer _powerUpMultiTimer;
   late Timer _powerUpForceTimer;
@@ -56,6 +57,7 @@ class PlayerComponent extends SpriteAnimationComponent with HasGameRef<SpaceLanc
     _powerUpForceTimer = Timer(6, onTick: () {
       bullet.changeDamage = _currentDamage;
       bullet.changeSpeed = 350;
+      _powerShot = false;
     });
     _bulletTimer = Timer(2, onTick: _createBullet, repeat: true);
   }
@@ -69,6 +71,7 @@ class PlayerComponent extends SpriteAnimationComponent with HasGameRef<SpaceLanc
   @override
   void onMount() {
     super.onMount();
+
     forceFieldSprite = ForceFieldComponent(position: position.clone());
     _playerData = Provider.of<PlayerData>(game.buildContext!, listen: false);
   }
@@ -94,24 +97,35 @@ class PlayerComponent extends SpriteAnimationComponent with HasGameRef<SpaceLanc
   final _bulletAngles = 0.0;
 
   void _createBullet() {
-    log(_speed.toString(), name: "СКОРОСТЬ");
-
+    bullet = BulletComponent(position: position + Vector2(-8, -size.y / 2), angle: _bulletAngles);
+    if (GameUtils.getCurrentLevel(score) == 5) {
+      _currentDamage = 20;
+    }
+    if (_powerShot) {
+      bullet.changeDamage = _currentDamage * 2;
+    } else {
+      bullet.changeDamage = _currentDamage;
+    }
     if (_shootMultipleBullets) {
-      gameRef.addAll(
+      gameRef.addAll(_superBulletAngles.map((angle) {
+        bullet = BulletComponent(position: position + Vector2(-5, -size.y / 2), angle: angle);
+        return bullet;
+      }));
+      /*gameRef.addAll(
         _superBulletAngles.map(
           (angle) => BulletComponent(
             position: position + Vector2(-5, -size.y / 2),
             angle: angle,
           ),
         ),
-      );
+      );*/
     } else {
-      bullet = BulletComponent(position: position + Vector2(-8, -size.y / 2), angle: _bulletAngles);
+      /*bullet = BulletComponent(position: position + Vector2(-8, -size.y / 2), angle: _bulletAngles);*/
       gameRef.add(bullet);
     }
-
+    log(bullet.getDamage.toString(), name: "DAMAGE");
     gameRef.addCommand(Command<AudioPlayerComponent>(action: (audioPlayer) {
-      audioPlayer.playSfx('laserSmall_001.wav');
+      audioPlayer.playSfx('shot.wav');
     }));
   }
 
@@ -190,8 +204,6 @@ class PlayerComponent extends SpriteAnimationComponent with HasGameRef<SpaceLanc
         }
       case 5:
         {
-          _currentDamage = 20;
-          bullet.changeDamage = _currentDamage;
           _timeShot = 0.5;
           if (forceFieldSprite.isMounted) {
             _speed = 500;
@@ -236,7 +248,7 @@ class PlayerComponent extends SpriteAnimationComponent with HasGameRef<SpaceLanc
 
   void destroy() {
     gameRef.addCommand(Command<AudioPlayerComponent>(action: (audioPlayer) {
-      audioPlayer.playSfx('laser1.wav');
+      audioPlayer.playSfx('explosion.wav');
     }));
     gameRef.add(ExplosionComponent(position: position));
     removeFromParent();
@@ -275,7 +287,7 @@ class PlayerComponent extends SpriteAnimationComponent with HasGameRef<SpaceLanc
   }
 
   void powerBullet() {
-    bullet.changeDamage = _currentDamage * 2;
+    _powerShot = true;
     bullet.changeSpeed = 550;
     _powerUpForceTimer.stop();
     _powerUpForceTimer.start();
@@ -292,19 +304,21 @@ class PlayerComponent extends SpriteAnimationComponent with HasGameRef<SpaceLanc
       stars.removeFromParent();
     }
 
-    stars = Platform.isIOS ? await ParallaxComponent.load(
-      [ParallaxImageData('stars1.png'), ParallaxImageData('stars2.png')],
-      repeat: ImageRepeat.repeat,
-      baseVelocity: Vector2(0, -10),
-      velocityMultiplierDelta: Vector2(0, 0.2),
-      size: Vector2(gameRef.size.x, gameRef.size.y),
-    ) : await ParallaxComponent.load(
-      [ParallaxImageData('stars1.png'), ParallaxImageData('stars2.png')],
-      repeat: ImageRepeat.repeat,
-      baseVelocity: Vector2(0, -50),
-      velocityMultiplierDelta: Vector2(0, 2.5),
-      size: Vector2(gameRef.size.x, gameRef.size.y),
-    );
+    stars = Platform.isIOS
+        ? await ParallaxComponent.load(
+            [ParallaxImageData('stars1.png'), ParallaxImageData('stars2.png')],
+            repeat: ImageRepeat.repeat,
+            baseVelocity: Vector2(0, -10),
+            velocityMultiplierDelta: Vector2(0, 0.2),
+            size: Vector2(gameRef.size.x, gameRef.size.y),
+          )
+        : await ParallaxComponent.load(
+            [ParallaxImageData('stars1.png'), ParallaxImageData('stars2.png')],
+            repeat: ImageRepeat.repeat,
+            baseVelocity: Vector2(0, -50),
+            velocityMultiplierDelta: Vector2(0, 2.5),
+            size: Vector2(gameRef.size.x, gameRef.size.y),
+          );
 
     gameRef.add(stars);
 

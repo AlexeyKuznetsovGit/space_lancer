@@ -33,7 +33,7 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
   late TextComponent _playerHealth;
   late EnemyCreator _enemyCreator;
   late PowerUpManager _powerUpManager;
-  late AudioPlayerComponent _audioPlayerComponent;
+  late AudioPlayerComponent audioPlayerComponent;
   late BossComponent _boss;
   late ForceFieldComponent forceField;
   Rect boundaries = Rect.zero;
@@ -47,7 +47,7 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
   Offset? pointerStarPosition;
   Offset? pointerCurrentPosition;
   final double joystickRadius = 60;
-  final double deadZoneRadius = 7;
+  final double deadZoneRadius = 0;
   late TimerProgressBar _progressBar;
 
   /*Vector2 fixedResolution = Vector2(540, 960);*/
@@ -70,8 +70,10 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
     }, autoStart: false);
   }
 
+
   @override
   Future<void> onLoad() async {
+
     boundaries = Rect.fromLTWH(10, 0, size.x - 20, size.y);
     _boss = BossComponent();
     await images.loadAll([
@@ -106,7 +108,7 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
       ),
     );
 
-    add(_audioPlayerComponent = AudioPlayerComponent());
+    add(audioPlayerComponent = AudioPlayerComponent());
 
     add(_enemyCreator = EnemyCreator(timer: timer, timeLimit: timeLimit));
     add(_powerUpManager = PowerUpManager());
@@ -143,6 +145,8 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
       ),
     );
   }
+
+
 
   @override
   void update(double dt) {
@@ -190,13 +194,14 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
 
   @override
   void onAttach() {
-    /*_audioPlayerComponent.playBgm('9. Space Invaders.wav');*/
+    audioPlayerComponent.playBgm('background.mp3');
     super.onAttach();
   }
 
   @override
   void onDetach() {
-    _audioPlayerComponent.stopBgm();
+
+    audioPlayerComponent.stopBgm();
     super.onDetach();
   }
 
@@ -240,7 +245,6 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
     super.render(canvas);
     if (pointerStarPosition != null) {
       canvas.drawCircle(pointerStarPosition!, joystickRadius, Paint()..color = Colors.grey.withAlpha(100));
-      canvas.drawCircle(pointerStarPosition!, deadZoneRadius, Paint()..color = Colors.red.withAlpha(100));
     }
     if (pointerCurrentPosition != null) {
       var delta = pointerCurrentPosition! - pointerStarPosition!;
@@ -268,7 +272,7 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
     if (player.isRemoved) {
       add(player);
     }
-
+    audioPlayerComponent.stopBgm();
     player.reset();
     _enemyCreator.reset();
     _powerUpManager.reset();
@@ -296,6 +300,7 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
     children.whereType<BossBullet>().forEach((bossBullet) {
       bossBullet.removeFromParent();
     });
+    audioPlayerComponent.playBgm('background.mp3');
   }
 
 /*void increaseScore([int? point]) {

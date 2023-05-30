@@ -27,7 +27,6 @@ class _GameOverMenuState extends State<GameOverMenu> {
     _ad = await RewardedAd.create(
       adUnitId: Platform.isAndroid ? 'R-M-2405775-1' : "R-M-2405832-1",
       onAdLoaded: () {
-        print('загружена');
         setState(() => isLoading = true);
       },
       onAdShown: () {
@@ -35,12 +34,7 @@ class _GameOverMenuState extends State<GameOverMenu> {
       },
       onAdDismissed: () {
         setState(() => isLoading = false);
-        print('скрыл');
         _ad = null;
-        /*  gameRef.overlays.remove(GameOverMenu.id);
-        gameRef.reset();
-
-        Get.to(() => MainScreen());*/
       },
       onAdFailedToLoad: (error) {
         setState(() => isLoading = false);
@@ -66,6 +60,7 @@ class _GameOverMenuState extends State<GameOverMenu> {
         widget.gameRef.overlays.remove(GameOverMenu.id);
 
         widget.gameRef.resumeEngine();
+        widget.gameRef.audioPlayerComponent.resumeBgm();
       } else {
         widget.gameRef.overlays.remove(GameOverMenu.id);
         widget.gameRef.reset();
