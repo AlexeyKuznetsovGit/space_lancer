@@ -10,16 +10,6 @@
             			<key>NSAllowsArbitraryLoads</key>
             			<true/>
             		</dict>
-	<key>NSMicrophoneUsageDescription</key>
-    <string>Разрешение использования микрофона</string>
-    <key>NSBluetoothAlwaysUsageDescription</key>
-    <string>Разрешение использования Bluetooth</string>
-    <key>NSBluetoothPeripheralUsageDescription</key>
-    <string>Разрешение использования Bluetooth</string>
-	<key>UIBackgroundModes</key>
-     <array>
-        <string>audio</string>
-     </array>
 	<key>GADApplicationIdentifier</key>
     	<string>ca-app-pub-3940256099942544~1458002511</string>
 	    <key>SKAdNetworkItems</key>
