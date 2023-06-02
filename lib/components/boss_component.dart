@@ -94,7 +94,9 @@ class BossComponent extends SpriteComponent with HasGameRef<SpaceLancerGame>, Co
 
     // Sync-up text component and value of hitPoints.
     _hpText.text = '$hitPoints HP';
-    if (hitPoints <= hitPoints / 2) {
+    print("$hitPoints AND ${hitPoints/2}");
+    if (hitPoints <= 500) {
+
       _currentSpeed = 250;
       speed = _currentSpeed;
       timeBullet = 1;

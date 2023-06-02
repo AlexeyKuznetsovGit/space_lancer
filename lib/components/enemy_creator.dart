@@ -9,18 +9,14 @@ import 'package:space_lancer/space_lancer_game.dart';
 class EnemyCreator extends Component with HasGameRef<SpaceLancerGame> {
   final Random random = Random();
   final _halfWidth = EnemyComponent.initialSize.x / 2;
-  double timer;
-  final double timeLimit;
-  late Timer _timer;
+  late Timer timer;
   late Timer _freezeTimer;
 
-/*period: 2, repeat: true*/
-  EnemyCreator({required this.timer, required this.timeLimit}) : super() {
-    _timer = Timer(2, onTick: _spawnEnemy, repeat: true);
+  EnemyCreator() : super() {
+    timer = Timer(2, onTick: _spawnEnemy, repeat: true);
 
-    // Sets freeze time to 2 seconds. After 2 seconds spawn timer will start again.
     _freezeTimer = Timer(4, onTick: () {
-      _timer.start();
+      timer.start();
     });
   }
 
@@ -43,8 +39,6 @@ class EnemyCreator extends Component with HasGameRef<SpaceLancerGame> {
   void _spawnEnemy() {
     late int countEnemy;
     int currentLevel = GameUtils.getCurrentLevel(gameRef.score);
-    /*Vector2 initialSize = Vector2(32, 32);*/
-    /*  Vector2 position = Vector2(random.nextDouble() * gameRef.size.x, 0);*/
 
     switch (currentLevel) {
       case 1:
@@ -96,7 +90,7 @@ class EnemyCreator extends Component with HasGameRef<SpaceLancerGame> {
     super.onMount();
     // Start the timer as soon as current enemy manager get prepared
     // and added to the game instance.
-    _timer.start();
+    timer.start();
   }
 
   @override
@@ -104,28 +98,24 @@ class EnemyCreator extends Component with HasGameRef<SpaceLancerGame> {
     super.onRemove();
     // Stop the timer if current enemy manager is getting removed from the
     // game instance.
-    _timer.stop();
+    timer.stop();
   }
 
   void freeze() {
-    _timer.stop();
+    timer.stop();
     _freezeTimer.stop();
     _freezeTimer.start();
   }
 
   void reset() {
-    _timer.stop();
-    _timer.start();
+    timer.stop();
+    timer.start();
   }
 
   @override
   void update(double dt) {
     super.update(dt);
-    if (timer > timeLimit) {
-      removeFromParent();
-    }
-    // Update timers with delta time to make them tick.
-    _timer.update(dt);
+    timer.update(dt);
     _freezeTimer.update(dt);
   }
 

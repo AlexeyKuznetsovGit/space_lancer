@@ -46,7 +46,7 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
   /*late PowerUpManager _powerUpManager;*/
   Offset? pointerStarPosition;
   Offset? pointerCurrentPosition;
-  final double joystickRadius = 60;
+  final double joystickRadius = 80;
   final double deadZoneRadius = 0;
   late TimerProgressBar _progressBar;
 
@@ -70,10 +70,8 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
     }, autoStart: false);
   }
 
-
   @override
   Future<void> onLoad() async {
-
     boundaries = Rect.fromLTWH(10, 0, size.x - 20, size.y);
     _boss = BossComponent();
     await images.loadAll([
@@ -90,6 +88,17 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
       'shield.png',
       'power.png'
     ]);
+
+    final joystick = JoystickComponent(
+      anchor: Anchor.bottomRight,
+      position: Vector2(size.x -40, size.y -40),
+      background: CircleComponent(
+        radius: 70,
+        paint: Paint()..color = Colors.grey.withAlpha(100),
+      ),
+      knob: CircleComponent(radius: 20, paint: Paint()..color = Colors.white.withAlpha(100)),
+    );
+    add(joystick);
 
     add(
       scoreText = TextComponent(
@@ -110,23 +119,22 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
 
     add(audioPlayerComponent = AudioPlayerComponent());
 
-    add(_enemyCreator = EnemyCreator(timer: timer, timeLimit: timeLimit));
+    add(_enemyCreator = EnemyCreator());
     add(_powerUpManager = PowerUpManager());
     add(StarBackGroundCreator());
 
-    add(player = PlayerComponent());
+    add(player = PlayerComponent(joystick: joystick));
     _playerHealth = TextComponent(
-      text: 'Прочность: 100%',
-      position: Vector2(size.x / 2, size.y -5),
-      textRenderer: TextPaint(
-        style: const TextStyle(
-          color: Colors.white,
-          fontSize: 16,
-          fontFamily: 'BungeeInline',
+        text: 'Прочность: 100%',
+        position: Vector2(size.x / 2, size.y - 5),
+        textRenderer: TextPaint(
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 16,
+            fontFamily: 'BungeeInline',
+          ),
         ),
-      ),
-      priority: 1
-    );
+        priority: 1);
 
     _playerHealth.anchor = Anchor.bottomCenter;
 
@@ -146,8 +154,6 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
     );
   }
 
-
-
   @override
   void update(double dt) {
     super.update(dt);
@@ -155,10 +161,13 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
     timerWinGame.update(dt);
     timer += dt;
     _progressBar.timer = timer;
-    _enemyCreator.timer = timer;
     if (timer > timeLimit && !bossSpawn) {
       add(_boss);
       bossSpawn = !bossSpawn;
+    }
+
+    if (timer > timeLimit) {
+      _enemyCreator.timer.stop();
     }
 
     for (var command in _commandList) {
@@ -200,12 +209,11 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
 
   @override
   void onDetach() {
-
     audioPlayerComponent.stopBgm();
     super.onDetach();
   }
 
-  @override
+  /* @override
   void handlePanStart(DragStartDetails details) {
     onPanStart(DragStartInfo.fromDetails(this, details));
     pointerStarPosition = details.globalPosition;
@@ -255,7 +263,7 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
       }
       canvas.drawCircle(delta, 20, Paint()..color = Colors.white.withAlpha(100));
     }
-  }
+  }*/
 
   void addCommand(Command command) {
     _addLaterCommandList.add(command);
@@ -274,9 +282,15 @@ class SpaceLancerGame extends FlameGame with PanDetector, HasCollisionDetection 
     }
     audioPlayerComponent.stopBgm();
     player.reset();
+    /* if(_enemyCreator.isRemoved){
+      add(_enemyCreator = EnemyCreator(timer: timer, timeLimit: timeLimit));
+    } else{
+      _enemyCreator.reset();
+    }*/
+    timer = 0;
     _enemyCreator.reset();
     _powerUpManager.reset();
-    timer = 0;
+
     bossSpawn = false;
     _boss.reset();
     add(_progressBar = TimerProgressBar(size, timer, timeLimit));

@@ -41,11 +41,11 @@ class PlayerComponent extends SpriteAnimationComponent with HasGameRef<SpaceLanc
   late PlayerData _playerData;
   late BulletComponent bullet;
   ParallaxComponent stars = ParallaxComponent();
-
+  JoystickComponent joystick;
   int get score => _playerData.currentScore;
   int level = 1;
 
-  PlayerComponent() : super() {
+  PlayerComponent({required this.joystick}) : super() {
     _powerUpMultiTimer = Timer(6, onTick: () {
       _shootMultipleBullets = false;
     });
@@ -140,6 +140,11 @@ class PlayerComponent extends SpriteAnimationComponent with HasGameRef<SpaceLanc
   @override
   void update(double dt) {
     super.update(dt);
+
+    if (!joystick.delta.isZero()) {
+      position.add(joystick.relativeDelta * _speed * dt);
+    }
+
     forceFieldSprite.position = position.clone();
     _powerUpForceTimer.update(dt);
     _powerUpShieldTimer.update(dt);
